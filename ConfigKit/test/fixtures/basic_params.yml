@@ -1,0 +1,52 @@
+# Test keyfile for basic parameter loading
+# Tests: simple values, units, descriptions, bounds
+
+Parameters:
+  CL:
+    abbr: CL
+    value: 5.0
+    unit: L/hr
+    desc: Systemic clearance
+    bounds: [0.1, 100.0]
+
+  V1:
+    abbr: V1
+    value: 50.0
+    unit: L
+    desc: Central volume of distribution
+    bounds: [1.0, 500.0]
+
+  Q:
+    abbr: Q
+    value: 10.0
+    unit: L/hr
+    desc: Intercompartmental clearance
+
+  V2:
+    abbr: V2
+    value: 100.0
+    unit: L
+    desc: Peripheral volume
+
+  # Simple format test
+  ka: 1.5
+
+Variables:
+  Central:
+    abbr: Central
+    initial: 0.0
+    unit: mg
+    desc: Drug amount in central compartment
+
+  Peripheral:
+    abbr: Peripheral
+    initial: 0.0
+    unit: mg
+    desc: Drug amount in peripheral compartment
+
+Constants:
+  MW:
+    abbr: MW
+    value: 450.0
+    unit: g/mol
+    desc: Molecular weight

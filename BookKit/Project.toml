@@ -1,0 +1,45 @@
+name = "BookKit"
+uuid = "f78b4679-f12c-44c1-b56d-9f6f2ed7612a"
+version = "0.1.0"
+authors = ["Tim Knab and contributors"]
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+StoreKit = "9dabb6d3-4d65-4c37-952e-ec00fc665777"
+
+[sources]
+StoreKit = {path = "../StoreKit"}
+TargKit = {path = "../TargKit"}
+SimKit = {path = "../SimKit"}
+
+[weakdeps]
+Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+MetaGraphsNext = "fa8bd995-216d-47f1-8a91-f3b68fbeb377"
+TargKit = "a7e3d3f1-8c4b-4e6a-9f2d-1b5c8a0e7d3f"
+SimKit = "116085dc-8549-443f-9770-efb2c1db145b"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+
+[extensions]
+BookKitMetaGraphsNextExt = ["Graphs", "MetaGraphsNext"]
+BookKitTargKitExt = ["TargKit"]
+BookKitSimKitExt = ["SimKit", "ModelingToolkit"]
+
+[compat]
+Graphs = "1"
+MetaGraphsNext = "0.7"
+ModelingToolkit = "11"
+SimKit = "0.1"
+StoreKit = "0.1"
+TargKit = "0.4"
+julia = "1.12"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TargKit = "a7e3d3f1-8c4b-4e6a-9f2d-1b5c8a0e7d3f"
+SimKit = "116085dc-8549-443f-9770-efb2c1db145b"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+
+[targets]
+test = ["Test", "TargKit", "SimKit", "ModelingToolkit"]

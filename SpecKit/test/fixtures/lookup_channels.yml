@@ -1,0 +1,14 @@
+input_level:
+  short: Input level
+  unit: volt
+  range: [-5, 5]
+
+response_gain:
+  short: Response gain
+  unit: ratio
+  range: [0, 1.5]
+
+residual:
+  short: Residual error
+  unit: normalized-error
+  range: [-0.25, 0.25]

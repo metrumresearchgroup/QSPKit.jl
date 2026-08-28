@@ -1,0 +1,32 @@
+SETUP__:
+  description: Controller channels with lookup
+  lookup_file: lookup_channels.yml
+  glue:
+    input_unit: "volt (formatted)"
+
+input_level:
+  lookup: true
+  unit.tex: <<input_unit>>
+
+response_gain:
+  lookup: true
+
+residual:
+  lookup: true
+  dots:
+    weight: 0.35
+
+check:
+  short: check name
+
+reading:
+  short: check reading
+  type: numeric
+
+lower:
+  short: lower check bound
+  type: numeric
+
+upper:
+  short: upper check bound
+  type: numeric

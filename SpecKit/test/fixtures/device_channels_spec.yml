@@ -1,0 +1,31 @@
+SETUP__:
+  description: Synthetic Device Modes
+  flags:
+    required: [gain, offset]
+    diagnostic: [noise]
+
+channel:
+  short: controller output
+  values:
+    Gain: gain
+    Offset: offset
+    Noise: noise
+
+mode:
+  short: synthetic operating mode
+  values:
+    Idle: idle
+    Tune: tune
+    Run: run
+
+reading:
+  short: dimensionless output
+  type: numeric
+
+lower:
+  short: lower check bound
+  type: numeric
+
+upper:
+  short: upper check bound
+  type: numeric

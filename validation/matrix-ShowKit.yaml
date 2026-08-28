@@ -1,0 +1,1968 @@
+- entrypoint: GGLayer
+  code: src/types.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: GGPlot
+  code: src/types.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: LaTeXTable
+  code: src/types.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: PMTable
+  code: src/types.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: add_npde!
+  code: src/npde/autonpde.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: aes
+  code: src/ggplot/core.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: after_scale
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: after_stat
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: annotate
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: annotation_custom
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: annotation_logticks
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: autonpde
+  code: src/npde/autonpde.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: axis_col_labs
+  code: src/yspec_integration.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: col_fixed
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: col_label
+  code: src/yspec_integration.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: col_ragged
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cont_cat
+  code: src/pmplots/covariate.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cont_cont
+  code: src/pmplots/covariate.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cont_hist
+  code: src/pmplots/covariate.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_cartesian
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_equal
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_fixed
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_flip
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_map
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_polar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_quickmap
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_sf
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: coord_trans
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_covariate
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_panel
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_q
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_scatter
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwres_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_q
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: cwresi_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_ipred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_pred_ipred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_preds
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: dv_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: element_blank
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: element_line
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: element_rect
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: element_text
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_cat
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_cont
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_covariate
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_covariate_list
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_hist
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: eta_pairs
+  code: src/pmplots/eta_plots.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: expand_limits
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: expansion
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: facet_grid
+  code: src/ggplot/facets.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: facet_wrap
+  code: src/ggplot/facets.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: factor
+  code: src/ggplot/escape.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_abline
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_area
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_bar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_bin2d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_blank
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_boxplot
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_col
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_contour
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_contour_filled
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_crossbar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_curve
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_density
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_density2d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_density_2d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_density_2d_filled
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_dotplot
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_errorbar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_errorbarh
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_freqpoly
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_hex
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_histogram
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_hline
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_jitter
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_label
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_line
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_linerange
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_map
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_path
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_point
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_pointrange
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_polygon
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_qq
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_qq_line
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_quantile
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_raster
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_rect
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_ribbon
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_rug
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_segment
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_sf
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_sf_label
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_sf_text
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_smooth
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_spoke
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_step
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_text
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_tile
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_violin
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: geom_vline
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: gg
+  code: src/ggplot/escape.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ggplot
+  code: src/ggplot/core.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ggtitle
+  code: src/ggplot/labels.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_axis
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_bins
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_colorbar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_colorsteps
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_colourbar
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_coloursteps
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_legend
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guide_none
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: guides
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: labs
+  code: src/ggplot/labels.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: lims
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: list_plot_x
+  code: src/pmplots/layout.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: margin
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: mrggsave
+  code: src/mrggsave/save.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: mrggsave_list
+  code: src/mrggsave/save.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_covariate
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_panel
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_q
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_scatter
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: npde_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: plot_data
+  code: src/plot_data.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pm_box
+  code: src/pmplots/covariate.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pm_grid
+  code: src/pmplots/layout.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pm_scatter
+  code: src/pmplots/covariate.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_dodge
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_dodge2
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_fill
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_jitter
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_jitterdodge
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_nudge
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: position_stack
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_cat_long
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_cat_wide
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_cont_long
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_cont_wide
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_data_inventory
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: pt_demographics
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: r_available
+  code: src/r_backend.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: r_gg
+  code: src/ggplot/escape.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: rel
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_q
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: res_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_alpha
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_alpha_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_alpha_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_alpha_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_brewer
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_distiller
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_gradient
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_gradient2
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_gradientn
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_grey
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_viridis_c
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_color_viridis_d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_brewer
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_distiller
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_gradient
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_gradient2
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_gradientn
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_grey
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_viridis_c
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_colour_viridis_d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_brewer
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_distiller
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_gradient
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_gradient2
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_gradientn
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_grey
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_viridis_c
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_fill_viridis_d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_linetype
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_linetype_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_linetype_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_shape
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_shape_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_shape_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_size
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_size_area
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_size_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_size_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_size_manual
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_binned
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_date
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_datetime
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_log10
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_reverse
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_sqrt
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_x_time
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_binned
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_continuous
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_date
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_datetime
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_discrete
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_log10
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_reverse
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_sqrt
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: scale_y_time
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: set_display_size
+  code: src/display.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st2png
+  code: src/pmtables/render.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_align
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_as_image
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_blank
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_bold
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_caption
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_center
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_clear_grouped
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_clear_reps
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_files
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_new
+  code: src/pmtables/tables.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_noteconf
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_notes
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_panel
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_rename
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_span
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_span_split
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: st_units
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stable
+  code: src/pmtables/render.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stable_long
+  code: src/pmtables/render.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stable_save
+  code: src/pmtables/render.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stage
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_bin
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_bin2d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_bin_hex
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_boxplot
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_contour
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_contour_filled
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_count
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_density
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_density_2d
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_density_2d_filled
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_ecdf
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_ellipse
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_function
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_identity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_qq
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_qq_line
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_quantile
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_smooth
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_summary
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_summary_bin
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_unique
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: stat_ydensity
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: tab_clear_reps
+  code: src/pmtables/pipeline.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_bw
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_classic
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_dark
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_gray
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_grey
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_light
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_linedraw
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_minimal
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_test
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: theme_void
+  code: src/ggplot/themes.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: unit
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: vpc
+  code: src/vpc/vpc.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: vpc_cat
+  code: src/vpc/vpc.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: vpc_cens
+  code: src/vpc/vpc.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: vpc_tte
+  code: src/vpc/vpc.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_cont_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_cont_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_cont_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_dv_preds
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_eta_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wrap_res_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_cat
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_cont
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_hist
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_pred
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_q
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_tad
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_tafd
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: wres_time
+  code: src/pmplots/diagnostics.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: xlab
+  code: src/ggplot/labels.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: xlim
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ylab
+  code: src/ggplot/labels.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ylim
+  code: src/ggplot/generated.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ys_factors
+  code: src/yspec_integration.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl
+- entrypoint: ys_factors!
+  code: src/yspec_integration.jl
+  doc: docs/src/api_reference.md
+  tests:
+    - test/runtests.jl
+    - test/wrapper_contracts_test.jl

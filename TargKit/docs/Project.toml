@@ -1,0 +1,17 @@
+[deps]
+ConfigKit = "83bc0fb5-991d-4d5f-b655-cf5b37f0dc9f"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+QSPKitCore = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+TargKit = "a7e3d3f1-8c4b-4e6a-9f2d-1b5c8a0e7d3f"
+
+[sources]
+ConfigKit = {path = "../../ConfigKit"}
+QSPKitCore = {path = "../../QSPKitCore"}
+TargKit = {path = ".."}
+
+[compat]
+ConfigKit = "0.1"
+Documenter = "1"
+QSPKitCore = "0.1"
+TargKit = "0.4"
+julia = "1.12"

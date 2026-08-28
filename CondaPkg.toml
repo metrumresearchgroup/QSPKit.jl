@@ -1,0 +1,5 @@
+channels = ["conda-forge"]
+
+[deps]
+r-ggplot2 = "==4.0.3"
+r-rlang = "==1.3.0"

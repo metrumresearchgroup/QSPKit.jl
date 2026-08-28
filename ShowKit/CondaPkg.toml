@@ -1,0 +1,42 @@
+channels = ["conda-forge"]
+
+[deps]
+# ggplot2
+r-ggplot2 = "==4.0.3"
+r-rlang = "==1.3.0"
+
+# Shared deps across pmplots/pmtables/mrggsave
+r-dplyr = "==1.2.1"
+r-tibble = "==3.3.1"
+r-tidyr = "==1.3.2"
+r-purrr = "==1.2.2"
+r-forcats = "==1.0.1"
+r-glue = "==1.8.1"
+r-assertthat = "==0.2.1"
+r-tidyselect = "==1.2.1"
+r-lifecycle = "==1.0.5"
+r-stringr = "==1.6.0"
+r-fs = "==2.1.0"
+r-rprojroot = "==2.1.1"
+r-patchwork = "==1.3.2"
+r-ggally = "==2.4.0"
+
+# pmtables-specific
+r-knitr = "==1.51"
+r-rmarkdown = "==2.31"
+
+# pmtables::st2png — render LaTeX tables to PNG. Needs pdftools (PDF→PNG)
+# and a separately provisioned working pdflatex.
+r-pdftools = "==3.9.0"
+
+# mrggsave-specific
+r-gridextra = "==2.3.1"
+r-gridgraphics = "==0.5_1"
+
+# vpc (Visual Predictive Checks) — Ron Keizer's vpc package + its deps
+r-vpc = "==1.2.4"
+r-mass = "==7.3_66"
+r-survival = "==3.8_9"
+r-classint = "==0.4_11"
+r-readr = "==2.2.0"
+r-mclust = "==6.1.3"

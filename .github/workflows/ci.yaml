@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test-${{ matrix.pkg }}-julia-1.12
+    runs-on: ubuntu-latest
+    env:
+      JULIA_CONDAPKG_ENV: ${{ runner.temp }}/qspkit-conda
+    strategy:
+      fail-fast: false
+      matrix:
+        pkg: [BookKit, CondaR, ConfigKit, InjecKit, QSPKitCore, QSPKitIO, QSPReports, ShowKit, SimKit, SpecKit, StoreKit, TargKit]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: ${{ matrix.pkg }}-test
+          cache-compiled: true
+
+      - name: Instantiate test environment
+        run: julia --project=${{ matrix.pkg }}/test -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Test with coverage
+        run: julia --startup-file=no --project=${{ matrix.pkg }}/test --code-coverage=user -e 'include("${{ matrix.pkg }}/test/runtests.jl")'
+
+  docs:
+    name: docs-${{ matrix.pkg }}-julia-1.12
+    runs-on: ubuntu-latest
+    env:
+      JULIA_CONDAPKG_ENV: ${{ runner.temp }}/qspkit-conda
+    strategy:
+      fail-fast: false
+      matrix:
+        pkg: [BookKit, CondaR, ConfigKit, InjecKit, QSPKitCore, QSPKitIO, QSPReports, ShowKit, SimKit, SpecKit, StoreKit, TargKit]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: ${{ matrix.pkg }}-docs
+          cache-compiled: true
+
+      - name: Instantiate documentation environment
+        run: julia --startup-file=no --project=${{ matrix.pkg }}/docs -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Build documentation
+        run: julia --startup-file=no --project=${{ matrix.pkg }}/docs -e 'include("${{ matrix.pkg }}/docs/make.jl")'
+
+  scorecard-lint:
+    name: scorecard-matrix-and-schema-lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: scorecard-lint
+          cache-compiled: true
+
+      - name: Instantiate validation environment
+        run: julia --startup-file=no --project=validation -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Validate traceability and score schema
+        run: julia --startup-file=no --project=validation validation/test/runtests.jl

@@ -1,0 +1,6 @@
+# QSPKitCore public API traceability matrix.
+
+- entrypoint: with_symbolic_compilation_lock
+  code: src/symbolic_codegen.jl
+  doc: docs/src/index.md
+  tests: [test/runtests.jl]

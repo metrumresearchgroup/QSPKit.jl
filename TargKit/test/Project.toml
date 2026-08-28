@@ -1,0 +1,24 @@
+[deps]
+ConfigKit = "83bc0fb5-991d-4d5f-b655-cf5b37f0dc9f"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
+OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
+QSPKitCore = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+SymbolicIndexingInterface = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
+TargKit = "a7e3d3f1-8c4b-4e6a-9f2d-1b5c8a0e7d3f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+ConfigKit = {path = "../../ConfigKit"}
+QSPKitCore = {path = "../../QSPKitCore"}
+TargKit = {path = ".."}
+
+[compat]
+ConfigKit = "0.1"
+DataFrames = "1"
+Optimization = "5"
+OptimizationOptimJL = "0.4"
+QSPKitCore = "0.1"
+SymbolicIndexingInterface = "0.3"
+TargKit = "0.4"
+julia = "1.12"

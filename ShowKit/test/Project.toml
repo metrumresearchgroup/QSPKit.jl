@@ -1,0 +1,15 @@
+[deps]
+CondaR = "02826c15-4b38-49f8-b478-6f46c11e7393"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ShowKit = "b07dc4ee-52a9-4303-838c-604ab9e65926"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+
+[sources]
+CondaR = {path = "../../CondaR"}
+ShowKit = {path = ".."}
+
+[compat]
+CondaR = "0.1"
+DataFrames = "1"
+ShowKit = "0.1"
+julia = "1.12"

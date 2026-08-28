@@ -1,0 +1,4 @@
+Manifest.toml
+*.cov
+*.jld2
+docs/build/

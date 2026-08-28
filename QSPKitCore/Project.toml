@@ -1,0 +1,13 @@
+name = "QSPKitCore"
+uuid = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+version = "0.1.0"
+authors = ["Tim Knab and contributors"]
+
+[compat]
+julia = "1.12"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

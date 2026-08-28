@@ -1,0 +1,41 @@
+name = "InjecKit"
+uuid = "c459914d-a012-4e13-bbe3-220b8bf26547"
+version = "0.1.0"
+authors = ["Tim Knab and contributors"]
+
+[deps]
+ConfigKit = "83bc0fb5-991d-4d5f-b655-cf5b37f0dc9f"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DiffEqCallbacks = "459566f4-90b8-5000-8ac3-15dfb0a30def"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+LRUCache = "8ac3fa9e-de4c-5943-b1dc-09c6b5f20637"
+ModelingToolkitBase = "7771a370-6774-4173-bd38-47e70ca0b839"
+QSPKitCore = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
+SciMLLogging = "a6db7da4-7206-11f0-1eab-35f2a5dbe1d1"
+SciMLStructures = "53ae85a6-f571-4167-b2af-e1d143709226"
+SymbolicIndexingInterface = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
+SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+
+[sources]
+ConfigKit = {path = "../ConfigKit"}
+QSPKitCore = {path = "../QSPKitCore"}
+
+[compat]
+ConfigKit = "0.1"
+DataFrames = "1"
+DiffEqCallbacks = "4"
+LRUCache = "1"
+ModelingToolkitBase = "1"
+OrdinaryDiffEq = "7"
+PrecompileTools = "1"
+QSPKitCore = "0.1"
+SciMLBase = "3"
+SciMLLogging = "2"
+SciMLStructures = "1"
+SymbolicIndexingInterface = "0.3"
+SymbolicUtils = "4"
+Symbolics = "7"
+julia = "1.12"

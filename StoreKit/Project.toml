@@ -1,0 +1,27 @@
+name = "StoreKit"
+uuid = "9dabb6d3-4d65-4c37-952e-ec00fc665777"
+version = "0.1.0"
+authors = ["Tim Knab and contributors"]
+
+[deps]
+DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+ExpressionExplorer = "21656369-7473-754a-2065-74616d696c43"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+SQLite = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
+
+[compat]
+DBInterface = "2"
+ExpressionExplorer = "1"
+JLD2 = "0.6"
+SQLite = "1"
+julia = "1.12"
+
+[extras]
+DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"
+SQLite = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["DBInterface", "SQLite", "Test"]

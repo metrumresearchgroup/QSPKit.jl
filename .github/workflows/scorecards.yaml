@@ -1,0 +1,323 @@
+name: SDLC technical qualification
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdlc-scorecards-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  privacy-preflight:
+    name: required-private-release-sanitization
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: scorecard-private-sanitization
+          cache-compiled: true
+
+      - name: Instantiate validation environment
+        run: julia --startup-file=no --project=validation -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Run required private-marker sanitization
+        env:
+          QSPKIT_PRIVATE_SANITIZATION_MARKERS: ${{ secrets.QSPKIT_PRIVATE_SANITIZATION_MARKERS }}
+          QSPKIT_REQUIRE_PRIVATE_SANITIZATION_MARKERS: 'true'
+        run: julia --startup-file=no --project=validation validation/sanitize.jl
+
+  package:
+    name: scorecard-${{ matrix.pkg }}-julia-1.12
+    needs: privacy-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      JULIA_CONDAPKG_ENV: ${{ runner.temp }}/qspkit-conda
+    strategy:
+      fail-fast: false
+      matrix:
+        pkg: [BookKit, CondaR, ConfigKit, InjecKit, QSPKitCore, QSPKitIO, QSPReports, ShowKit, SimKit, SpecKit, StoreKit, TargKit]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: scorecard-${{ matrix.pkg }}
+          cache-compiled: true
+
+      - name: Instantiate scorecard environments
+        env:
+          PACKAGE: ${{ matrix.pkg }}
+        run: |
+          julia --startup-file=no --project=validation -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+          julia --startup-file=no --project="$PACKAGE/test" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+          julia --startup-file=no --project="$PACKAGE/docs" -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Generate package scorecard evidence
+        id: generate
+        continue-on-error: true
+        env:
+          PACKAGE: ${{ matrix.pkg }}
+          QSPKIT_BUG_REPORTS_URL: ${{ vars.QSPKIT_BUG_REPORTS_URL }}
+        run: julia --startup-file=no --project=validation validation/generate.jl package "$PACKAGE"
+
+      - name: Validate package evidence privacy
+        id: privacy
+        if: always()
+        continue-on-error: true
+        env:
+          QSPKIT_PRIVATE_SANITIZATION_MARKERS: ${{ secrets.QSPKIT_PRIVATE_SANITIZATION_MARKERS }}
+          QSPKIT_REQUIRE_PRIVATE_SANITIZATION_MARKERS: 'true'
+        run: julia --startup-file=no --project=validation validation/generate.jl privacy
+
+      - name: Upload package evidence
+        if: always() && steps.privacy.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdlc-component-${{ matrix.pkg }}-${{ github.sha }}
+          path: validation/output/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Enforce package qualification
+        if: >-
+          always() &&
+          (steps.generate.outcome != 'success' ||
+           steps.privacy.outcome != 'success')
+        env:
+          PACKAGE: ${{ matrix.pkg }}
+        run: |
+          echo "$PACKAGE scorecard generation or qualification failed" >&2
+          exit 1
+
+  aggregate:
+    name: aggregate-and-verify-scorecards
+    if: always()
+    needs: package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GITHUB_PAT: ${{ github.token }}
+      JULIA_CONDAPKG_ENV: ${{ runner.temp }}/qspkit-conda
+      RSPM: https://packagemanager.posit.co/cran/__linux__/noble/2026-01-16
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: scorecard-aggregate
+          cache-compiled: true
+
+      - name: Instantiate workspace and validation environments
+        run: |
+          julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+          julia --startup-file=no --project=validation -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Download package evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sdlc-component-*-${{ github.sha }}
+          path: validation/output/
+          merge-multiple: true
+
+      - name: Check component artifact layout
+        run: |
+          for package in BookKit CondaR ConfigKit InjecKit QSPKitCore QSPKitIO QSPReports ShowKit SimKit SpecKit StoreKit TargKit; do
+            version=$(sed -n 's/^version = "\([^"]*\)"/\1/p' "$package/Project.toml")
+            test -n "$version"
+            test -d "validation/output/${package}_${version}"
+          done
+
+      - name: Build whole-QSPKit scorecard
+        id: aggregate
+        continue-on-error: true
+        env:
+          QSPKIT_BUG_REPORTS_URL: ${{ vars.QSPKIT_BUG_REPORTS_URL }}
+        run: julia --startup-file=no --project=validation validation/generate.jl aggregate
+
+      - name: Verify all 13 scorecards
+        id: verify
+        if: always()
+        continue-on-error: true
+        env:
+          QSPKIT_BUG_REPORTS_URL: ${{ vars.QSPKIT_BUG_REPORTS_URL }}
+        run: julia --startup-file=no --project=validation validation/generate.jl verify
+
+      - name: Validate complete evidence privacy
+        id: privacy
+        if: always()
+        continue-on-error: true
+        env:
+          QSPKIT_PRIVATE_SANITIZATION_MARKERS: ${{ secrets.QSPKIT_PRIVATE_SANITIZATION_MARKERS }}
+          QSPKIT_REQUIRE_PRIVATE_SANITIZATION_MARKERS: 'true'
+        run: julia --startup-file=no --project=validation validation/generate.jl privacy
+
+      - name: Upload 13-card evidence
+        if: always() && steps.privacy.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qspkit-sdlc-13-card-${{ github.sha }}
+          path: validation/output/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Set up R 4.5.1
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6
+        with:
+          r-version: '4.5.1'
+          use-public-rspm: false
+
+      - name: Set up Pandoc 3.1.11
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        uses: r-lib/actions/setup-pandoc@d3c5be51b12e724e68f33216ca3c148b66d5f0b6
+        with:
+          pandoc-version: '3.1.11'
+
+      - name: Set up TinyTeX 2026.01
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        uses: r-lib/actions/setup-tinytex@d3c5be51b12e724e68f33216ca3c148b66d5f0b6
+        env:
+          TINYTEX_INSTALLER: TinyTeX
+          TINYTEX_VERSION: '2026.01'
+
+      - name: Install immutable mpn.scorecard renderer
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        uses: r-lib/actions/setup-r-dependencies@d3c5be51b12e724e68f33216ca3c148b66d5f0b6
+        with:
+          packages: github::metrumresearchgroup/mpn.scorecard@116cf0d89b952f6fb92f00c4bef261742e819a75
+          dependencies: 'c("Depends", "Imports")'
+          upgrade: 'FALSE'
+          pak-version: repo
+          cache-version: scorecard-0.5.4-2026-01-16-1
+          install-pandoc: false
+          install-quarto: false
+
+      - name: Install PDF text extractor
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends poppler-utils
+
+      - name: Verify pinned renderer environment
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        shell: Rscript {0}
+        run: |
+          expected_sha <- "116cf0d89b952f6fb92f00c4bef261742e819a75"
+          description <- utils::packageDescription("mpn.scorecard")
+          stopifnot(
+            identical(as.character(getRversion()), "4.5.1"),
+            identical(as.character(utils::packageVersion("mpn.scorecard")), "0.5.4"),
+            identical(tolower(description[["RemoteSha"]]), expected_sha),
+            identical(as.character(rmarkdown::pandoc_version()), "3.1.11"),
+            nzchar(Sys.which("xelatex")),
+            nzchar(Sys.which("pdftotext")),
+            nzchar(Sys.which("pdfinfo"))
+          )
+
+      - name: Render exactly 13 scorecard PDFs
+        id: render
+        continue-on-error: true
+        if: >-
+          needs.package.result == 'success' &&
+          steps.aggregate.outcome == 'success' &&
+          steps.verify.outcome == 'success' &&
+          steps.privacy.outcome == 'success'
+        run: >-
+          Rscript --vanilla validation/render-scorecards.R
+          validation/output validation/cards
+
+      - name: Extract and validate rendered-card privacy
+        id: pdf_privacy
+        continue-on-error: true
+        if: always() && steps.render.outcome == 'success'
+        env:
+          QSPKIT_PRIVATE_SANITIZATION_MARKERS: ${{ secrets.QSPKIT_PRIVATE_SANITIZATION_MARKERS }}
+          QSPKIT_REQUIRE_PRIVATE_SANITIZATION_MARKERS: 'true'
+        run: >-
+          julia --startup-file=no --project=validation validation/generate.jl
+          pdf-privacy validation/cards
+
+      - name: Upload 13 rendered scorecard PDFs
+        if: always() && steps.pdf_privacy.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qspkit-sdlc-13-pdf-${{ github.sha }}
+          path: validation/cards/*.pdf
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Record technical qualification boundary
+        if: always()
+        run: |
+          echo '## Technical qualification only' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This workflow checks tests, documentation builds, evidence integrity, rendering, and privacy.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'A passing run is not publication approval. Repository-wide licensing and a concrete private security-reporting channel require separate owner sign-off.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Coverage is reported in each scorecard as risk evidence; this alpha has no owner-approved numeric coverage threshold.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce technical qualification
+        if: >-
+          always() &&
+          (needs.package.result != 'success' ||
+           steps.aggregate.outcome != 'success' ||
+           steps.verify.outcome != 'success' ||
+           steps.privacy.outcome != 'success' ||
+           steps.render.outcome != 'success' ||
+           steps.pdf_privacy.outcome != 'success')
+        run: |
+          echo "one or more technical evidence, rendering, or privacy gates failed" >&2
+          exit 1

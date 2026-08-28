@@ -1,0 +1,23 @@
+SETUP__:
+  description: Synthetic Controller Checks
+  flags:
+    required: [setpoint, measured]
+
+check:
+  short: check name
+  values:
+    setpoint: Requested setpoint
+    measured: Measured output
+    status: Controller status
+
+reading:
+  short: check reading
+  type: numeric
+
+lower:
+  short: lower check bound
+  type: numeric
+
+upper:
+  short: upper check bound
+  type: numeric
