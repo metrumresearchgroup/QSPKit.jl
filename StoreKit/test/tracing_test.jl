@@ -1,10 +1,7 @@
 using StoreKit
 using Test
 
-# Build fixture include statements without embedding literal include calls in
-# this test source; the scorecard reachability scanner intentionally follows
-# literal includes as test-suite entrypoints.
-fixture_statement(path) = "incl" * "ude(" * repr(path) * ")\n"
+fixture_statement(path) = "include(" * repr(path) * ")\n"
 
 @testset "IR Tracing" begin
 

@@ -195,8 +195,8 @@ ShowKit does NOT reimplement R packages in Julia. Every function call forwards t
 R is installed and isolated via CondaPkg (conda-forge). Your system R,
 `.Rprofile`, and `.Renviron` are not used — CondaR blanks all R environment
 variables to prevent contamination. By default CondaR uses the named
-`@qspkit_r` CondaPkg environment; CI and qualification runs set
-`JULIA_CONDAPKG_ENV` to a disposable path.
+`@qspkit_r` CondaPkg environment; CI runs set `JULIA_CONDAPKG_ENV` to a
+disposable path.
 
 Two `CondaPkg.toml` files declare dependencies:
 - `CondaR/CondaPkg.toml` — installs `r-base >= 4.4` (the R runtime)

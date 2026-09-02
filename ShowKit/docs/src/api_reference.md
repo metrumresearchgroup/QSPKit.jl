@@ -142,8 +142,7 @@ set_display_size
 ## Complete exported API inventory
 
 This reviewed inventory includes the wrappers exported from ShowKit's included
-generator files. The test suite compares it with the module's runtime exports,
-and the SDLC traceability matrix covers every entry below.
+generator files. The test suite compares it with the module's runtime exports.
 
 ```text
 GGLayer

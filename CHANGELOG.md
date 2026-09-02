@@ -26,15 +26,8 @@ Included package versions:
 - Removed SimKit's nonfunctional `observe` builder and reduced QSPKitCore to
   the symbolic-compilation lock actually used by InjecKit.
 - Documented the executable-input boundary for ConfigKit keyfiles.
-- Added per-package SDLC evidence cards and a fail-closed aggregate QSPKit
-  card with line-weighted coverage.
-- Added a manual/version-tag technical-qualification workflow that builds 12
-  package cards, combines them into the QSPKit card, verifies the full 13-card set, and
-  uploads the complete evidence tree plus a distinct set of 13 rendered PDFs
-  after fail-closed PDF text extraction and privacy validation.
 - Replaced project-specific examples and fixtures with synthetic material,
-  removed a private-path integration test, and added a fail-closed release
-  sanitization gate plus privacy-safe scorecard metadata and transcripts.
+  and removed a private-path integration test.
 - Fixed SimKit phase-cache keying and ConfigKit keyfile strictness, path-based
   `solve_for` routing, problem-update strictness, and the narrow
   ModelingToolkit/DynamicQuantities diagnostic workaround. Behavioral fixes

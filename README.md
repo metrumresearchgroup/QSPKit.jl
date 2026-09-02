@@ -34,7 +34,7 @@ workspace and import the component packages you need.
 
 - Julia 1.12
 - Linux or macOS. The alpha's CondaR boundary assumes a Unix R layout; Windows
-  is not supported or qualified for the complete workspace.
+  is not supported for the complete workspace.
 - A C/C++ toolchain supported by the SciML dependencies on your platform
 - CondaPkg network access while provisioning the isolated CondaR/ShowKit
   environment; some ShowKit operations invoke separately provisioned R packages
@@ -42,16 +42,15 @@ workspace and import the component packages you need.
 
 CondaR may repair RCall against the selected CondaPkg R installation. ShowKit
 and SpecKit perform read-only R dependency checks and never install or rewrite
-R packages during ordinary use. Run full CondaR/ShowKit qualification with a
+R packages during ordinary use. Run the full CondaR/ShowKit test suites with a
 disposable Julia depot and `JULIA_CONDAPKG_ENV`; the supplied CI uses a
 runner-temporary Conda environment.
 
 Package `compat` entries are supported version ranges, as expected for Julia
-libraries; the source tree does not commit consumer lockfiles. Qualification
-captures and hashes the exact Julia manifests resolved for each test run, while
-direct Conda dependencies use reviewed exact versions. Optional pmplots,
-pmtables, mrggsave, npde, and yspec integrations remain caller-provisioned and
-must be version-controlled by the consuming application when used.
+libraries; the source tree does not commit consumer lockfiles. Direct Conda
+dependencies use reviewed exact versions. Optional pmplots, pmtables, mrggsave,
+npde, and yspec integrations remain caller-provisioned and must be
+version-controlled by the consuming application when used.
 
 ## Getting started
 
@@ -90,22 +89,6 @@ julia --startup-file=no --project=ConfigKit/test -e 'using Pkg; Pkg.instantiate(
 ```
 
 CI runs the corresponding suite for every package in this alpha.
-
-The [SDLC validation guide](validation/README.md) describes package-level
-evidence cards and the conservative aggregate QSPKit card. A separate
-[technical-qualification workflow](.github/workflows/scorecards.yaml) generates
-the 12 package cards in parallel and combines them into a verified whole-QSPKit
-card on manual dispatch or a version-tag push. It uploads the machine-readable
-13-card evidence and the 13 rendered PDFs as separate artifacts only after
-their respective fail-closed privacy gates pass.
-
-A passing technical workflow is not publication approval: repository-wide
-licensing and a concrete private security-reporting channel still require
-owner sign-off. Coverage is reported as SDLC risk evidence, but this alpha does
-not declare an owner-approved numeric coverage threshold.
-
-The [release-sanitization record](SANITIZATION.md) documents the publication
-boundary and its automated scan for identifying or project-specific material.
 
 ## Licensing
 

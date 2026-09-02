@@ -250,8 +250,7 @@ using DataFrames
         @test isdefined(ShowKit, :element_text)
         @test isdefined(ShowKit, :element_blank)
 
-        inventory_path = normpath(joinpath(
-            @__DIR__, "..", "..", "validation", "exports-ShowKit.txt"))
+        inventory_path = joinpath(@__DIR__, "exports-ShowKit.txt")
         expected = Set{Symbol}()
         for line in eachline(inventory_path)
             entry = strip(first(split(line, '#'; limit=2)))

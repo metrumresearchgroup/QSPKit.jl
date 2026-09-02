@@ -154,8 +154,7 @@ _showkit_reval_seen(calls, value) =
 end
 
 @testset "Export inventory is callable" begin
-    inventory_path = normpath(joinpath(
-        @__DIR__, "..", "..", "validation", "exports-ShowKit.txt"))
+    inventory_path = joinpath(@__DIR__, "exports-ShowKit.txt")
     expected = Symbol[]
     for line in eachline(inventory_path)
         entry = strip(first(split(line, '#'; limit=2)))
