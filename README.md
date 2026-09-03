@@ -33,9 +33,8 @@ workspace and import the component packages you need.
 ## Requirements
 
 - Julia 1.12
-- Linux or macOS. The alpha's CondaR boundary assumes a Unix R layout; Windows
-  is not supported for the complete workspace.
-- A C/C++ toolchain supported by the SciML dependencies on your platform
+- Linux or macOS for CondaR and R-backed ShowKit workflows. CondaR assumes a
+  Unix R layout, so Windows is not supported for the complete workspace.
 - CondaPkg network access while provisioning the isolated CondaR/ShowKit
   environment; some ShowKit operations invoke separately provisioned R packages
   and external rendering tools
@@ -43,14 +42,14 @@ workspace and import the component packages you need.
 CondaR may repair RCall against the selected CondaPkg R installation. ShowKit
 and SpecKit perform read-only R dependency checks and never install or rewrite
 R packages during ordinary use. Run the full CondaR/ShowKit test suites with a
-disposable Julia depot and `JULIA_CONDAPKG_ENV`; the supplied CI uses a
-runner-temporary Conda environment.
+disposable Julia depot and a dedicated `JULIA_CONDAPKG_ENV`.
 
 Package `compat` entries are supported version ranges, as expected for Julia
-libraries; the source tree does not commit consumer lockfiles. Direct Conda
+libraries. Julia manifests are intentionally untracked, so consuming
+applications should resolve and maintain their own lockfiles. Direct Conda
 dependencies use reviewed exact versions. Optional pmplots, pmtables, mrggsave,
-npde, and yspec integrations remain caller-provisioned and must be
-version-controlled by the consuming application when used.
+npde, and yspec integrations remain caller-provisioned and should be versioned
+by the consuming application when used.
 
 ## Getting started
 
@@ -88,13 +87,14 @@ Each package has an isolated test environment. For example:
 julia --startup-file=no --project=ConfigKit/test -e 'using Pkg; Pkg.instantiate(); include("ConfigKit/test/runtests.jl")'
 ```
 
-CI runs the corresponding suite for every package in this alpha.
-
 ## Licensing
 
-ConfigKit and InjecKit retain their package-specific MIT license files. A
-repository-wide license has not yet been assigned to the remaining packages.
-Resolve that ownership decision before publishing this workspace publicly.
+The QSPKit workspace is covered by the
+[Metrum Research Group Free License, Version 1.0](LICENSE.md). It permits use
+for internal business or academic activities in life-sciences research and
+development, subject to the license's terms and restrictions. Modification,
+redistribution, sublicensing, and commercialization are not permitted without
+a separate written agreement with Metrum Research Group.
 
-See [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and
-[Source provenance](PROVENANCE.md) for release and maintenance policy.
+ConfigKit and InjecKit also retain package-specific MIT license files. See the
+complete license text for controlling terms and licensing contact information.
