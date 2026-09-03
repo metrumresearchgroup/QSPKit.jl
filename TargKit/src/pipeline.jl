@@ -27,7 +27,7 @@ function setup(
     bounds::Union{NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}}, Nothing} = nothing,
     keyfile = nothing,
     x0::Union{Vector{Float64}, Nothing} = nothing,
-    loss::Union{Symbol, Function} = :log,
+    loss::Union{Symbol, Function, Nothing} = nothing,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,

@@ -1023,6 +1023,28 @@ end
         @test result.loss < 0.01
     end
 
+    @testset "TargetSet loss is inherited by setup() and fit()" begin
+        ts = TargetSet(DataFrame(name=[:x], value=[2.0]); loss=:squared)
+        simulate = _ -> (prediction=-1.0,)
+        predict = (sim, _) -> sim.prediction
+        kwargs = (
+            simulate=simulate,
+            predict=predict,
+            params=[:p],
+            bounds=(lb=[0.1], ub=[10.0]),
+            x0=[1.0],
+            on_eval=nothing,
+            verbose=false,
+        )
+
+        state = setup(ts; kwargs...)
+        @test state.obj.default_loss == :squared
+        @test state.loss ≈ 9.0
+
+        result = fit(ts; kwargs..., strategy=FitStep(:noop, identity))
+        @test result.loss ≈ 9.0
+    end
+
     # ============================================================
     # 19. where() — TargetSet filtering
     # ============================================================
