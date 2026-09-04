@@ -1,4 +1,6 @@
-# QSPKit alpha
+# QSPKit
+
+## Initial early release of QSPKit
 
 QSPKit is a Julia 1.12 workspace for building and running quantitative systems
 pharmacology models with ModelingToolkit and SciML.
@@ -7,7 +9,6 @@ This alpha retains every active QSPKit package except DiffKit:
 
 | Package | Role |
 | --- | --- |
-| [BookKit](BookKit/) | Result provenance, lookup, restoration, staleness, and lineage |
 | [CondaR](CondaR/) | Isolated CondaPkg-managed R runtime and RCall bridge |
 | [ConfigKit](ConfigKit/) | YAML keyfiles, parameter metadata, model population, and fast problem updates |
 | [InjecKit](InjecKit/) | Bolus doses, infusions, parameter events, and event-aware ODE solves |
