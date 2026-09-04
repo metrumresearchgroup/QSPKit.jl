@@ -169,6 +169,41 @@ end
 
 @testset "Session Log" begin
 
+    @testset "recording without a StoreKit import (shadowed=$shadowed)" for shadowed in (false, true)
+        StoreKit.clear_session_log!()
+        caller = Module(gensym(:SessionCaller))
+        @test !isdefined(caller, :StoreKit)
+        if shadowed
+            Core.eval(caller, :(const StoreKit = nothing))
+        end
+
+        try
+            # Looking up an existing function must work, as with ShowKit.mrggsave.
+            @test Core.eval(caller, StoreKit._recording_transform(:identity)) === identity
+            entry = only(get_session_log())
+            @test entry.id == 1
+            @test isempty(entry.defs)
+            @test :identity in entry.refs
+            @test StoreKit._CURRENT_EXPR_ID[] == 0
+
+            Core.eval(caller, :(input = 41))
+            @test Core.eval(caller, StoreKit._recording_transform(:(result = input + 1))) == 42
+            entry = last(get_session_log())
+            @test entry.id == 2
+            @test :result in entry.defs
+            @test :input in entry.refs
+            @test StoreKit._CURRENT_EXPR_ID[] == 0
+
+            @test_throws ErrorException("session test failure") Core.eval(
+                caller, StoreKit._recording_transform(:(error("session test failure"))))
+            @test length(get_session_log()) == 3
+            @test last(get_session_log()).id == 3
+            @test StoreKit._CURRENT_EXPR_ID[] == 0
+        finally
+            StoreKit.clear_session_log!()
+        end
+    end
+
     @testset "SessionEntry stores defs and refs" begin
         entry = StoreKit.SessionEntry(1, Set([:x, :y]), Set([:a, :b]))
         @test entry.id == 1
