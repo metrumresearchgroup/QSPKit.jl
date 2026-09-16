@@ -1,0 +1,48 @@
+# Test keyfile for variant testing
+# Tests: variant selection, get_variant_diff, fallback to default
+
+Parameters:
+  CL:
+    abbr: CL
+    variants:
+      default:
+        value: 5.0
+      human:
+        value: 5.0
+      mouse:
+        value: 50.0
+      rat:
+        value: 25.0
+    unit: L/hr
+    desc: Systemic clearance - species-dependent
+
+  V1:
+    abbr: V1
+    variants:
+      default:
+        value: 50.0
+      human:
+        value: 50.0
+      mouse:
+        value: 0.025
+      rat:
+        value: 0.25
+    unit: L
+    desc: Central volume of distribution
+
+  Q:
+    abbr: Q
+    value: 10.0
+    unit: L/hr
+    desc: Intercompartmental clearance (species-independent)
+
+Variables:
+  Central:
+    abbr: Central
+    variants:
+      default:
+        initial: 0.0
+      bolus:
+        initial: 100.0
+    unit: mg
+    desc: Initial drug in central compartment

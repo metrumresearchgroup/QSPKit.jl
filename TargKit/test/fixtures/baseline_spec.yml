@@ -1,0 +1,23 @@
+SETUP__:
+  description: Baseline Biomarker Levels
+  flags:
+    inflammatory: [blood_eos, feno]
+
+name:
+  short: target name
+  values:
+    blood_eos: Blood Eosinophils
+    feno: Fractional Exhaled Nitric Oxide
+    fev1: Forced Expiratory Volume in 1s
+
+value:
+  short: target value
+  type: numeric
+
+lower:
+  short: lower acceptance bound
+  type: numeric
+
+upper:
+  short: upper acceptance bound
+  type: numeric

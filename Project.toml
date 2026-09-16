@@ -1,0 +1,58 @@
+[workspace]
+projects = [
+    "BookKit",
+    "CondaR",
+    "ConfigKit",
+    "InjecKit",
+    "QSPKitCore",
+    "QSPKitIO",
+    "QSPReports",
+    "ShowKit",
+    "SimKit",
+    "SpecKit",
+    "StoreKit",
+    "TargKit",
+]
+
+[deps]
+BookKit = "f78b4679-f12c-44c1-b56d-9f6f2ed7612a"
+CondaR = "02826c15-4b38-49f8-b478-6f46c11e7393"
+ConfigKit = "83bc0fb5-991d-4d5f-b655-cf5b37f0dc9f"
+InjecKit = "c459914d-a012-4e13-bbe3-220b8bf26547"
+QSPKitCore = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+QSPKitIO = "cfd30ea6-aeba-4209-96cc-558e5e111311"
+QSPReports = "9f8a7e6d-5c4b-4321-8a9f-1d2c3b4a5e6f"
+ShowKit = "b07dc4ee-52a9-4303-838c-604ab9e65926"
+SimKit = "116085dc-8549-443f-9770-efb2c1db145b"
+SpecKit = "2b8f8c0c-2b01-42d2-b040-6535c6b7d8ff"
+StoreKit = "9dabb6d3-4d65-4c37-952e-ec00fc665777"
+TargKit = "a7e3d3f1-8c4b-4e6a-9f2d-1b5c8a0e7d3f"
+
+[sources]
+BookKit = {path = "BookKit"}
+CondaR = {path = "CondaR"}
+ConfigKit = {path = "ConfigKit"}
+InjecKit = {path = "InjecKit"}
+QSPKitCore = {path = "QSPKitCore"}
+QSPKitIO = {path = "QSPKitIO"}
+QSPReports = {path = "QSPReports"}
+ShowKit = {path = "ShowKit"}
+SimKit = {path = "SimKit"}
+SpecKit = {path = "SpecKit"}
+StoreKit = {path = "StoreKit"}
+TargKit = {path = "TargKit"}
+
+[compat]
+BookKit = "0.1"
+CondaR = "0.1"
+ConfigKit = "0.1"
+InjecKit = "0.1"
+QSPKitCore = "0.1"
+QSPKitIO = "0.1"
+QSPReports = "0.1"
+ShowKit = "0.1"
+SimKit = "0.1"
+SpecKit = "0.1"
+StoreKit = "0.1"
+TargKit = "0.4"
+julia = "1.12"

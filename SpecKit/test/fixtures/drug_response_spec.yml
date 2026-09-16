@@ -1,0 +1,32 @@
+SETUP__:
+  description: Drug Response Endpoints (Gadkar Fig 4)
+  flags:
+    biomarker: [blood_eos, feno]
+    efficacy: [fev1]
+
+endpoint:
+  short: biomarker endpoint
+  values:
+    Blood_Eosinophils: blood_eos
+    FeNO: feno
+    FEV1: fev1
+
+drug:
+  short: treatment
+  values:
+    Anti-IL5: mepolizumab
+    Anti-IL13: lebrikizumab
+    Anti-IL4Ra: dupilumab
+    Anti-TSLP: tezepelumab
+
+value:
+  short: target value (percent change)
+  type: numeric
+
+lower:
+  short: lower bound (percent change)
+  type: numeric
+
+upper:
+  short: upper bound (percent change)
+  type: numeric

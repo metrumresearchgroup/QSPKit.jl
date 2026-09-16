@@ -1,0 +1,14 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+BookKit = "f78b4679-f12c-44c1-b56d-9f6f2ed7612a"
+StoreKit = "9dabb6d3-4d65-4c37-952e-ec00fc665777"
+
+[sources]
+BookKit = {path = ".."}
+StoreKit = {path = "../../StoreKit"}
+
+[compat]
+BookKit = "0.1"
+Documenter = "1"
+StoreKit = "0.1"
+julia = "1.12"

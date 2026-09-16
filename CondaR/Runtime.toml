@@ -1,0 +1,56 @@
+# Native requirements, resolved automatically per project and host.
+# Bounds express supported R compatibility; individual binary builds are not pinned.
+channels = ["conda-forge"]
+
+[deps]
+r-base = ">=4.5,<5"
+# Reusable upstream binaries for ShowKit's core graph. Repository policy still
+# selects the private R library; these versions are never forced into it.
+r-ggplot2 = "*"
+r-pdftools = "*"
+r-vpc = "*"
+r-rmarkdown = "*"
+r-mclust = "*"
+# Used by the isolated resolver to exchange structured package metadata.
+r-jsonlite = "*"
+pandoc = "*"
+zlib = "*"
+expat = "*"
+# Headers, pkg-config metadata and the unversioned link library are a separate
+# output of conda-forge's libxml2 recipe. The runtime alone cannot build R xml2.
+libxml2-devel = "*"
+# SDK files for source versions not present in the binary catalog. Runtime-only
+# R binary dependencies do not necessarily include these development files.
+libcurl = "*"
+openssl = "*"
+cairo = "*"
+fontconfig = "*"
+freetype = "*"
+harfbuzz = "*"
+fribidi = "*"
+poppler = "*"
+
+[platform-deps.unix]
+c-compiler = "*"
+cxx-compiler = "*"
+fortran-compiler = "*"
+make = "*"
+pkg-config = "*"
+
+[platform-deps.osx]
+libintl-devel = "*"
+
+[platform-deps.linux]
+# Cairo's X11 pkg-config graph also needs protocol development metadata.
+xorg-xorgproto = "*"
+
+# conda-forge R is built with MinGW, not the MSVC c-compiler metapackage.
+[platform-deps.win]
+gcc_win-64 = "*"
+gxx_win-64 = "*"
+gfortran_win-64 = "*"
+m2-base = "*"
+m2-make = "*"
+m2-pkg-config = "*"
+m2-tar = "*"
+m2-unzip = "*"

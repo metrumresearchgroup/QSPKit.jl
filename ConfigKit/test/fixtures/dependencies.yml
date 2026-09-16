@@ -1,0 +1,48 @@
+# Test keyfile for dependency resolution
+# Tests: expression-valued parameters (become bindings in populate)
+
+Parameters:
+  # Base parameters
+  CL:
+    abbr: CL
+    value: 10.0
+    unit: L/hr
+    desc: Clearance
+
+  V:
+    abbr: V
+    value: 100.0
+    unit: L
+    desc: Volume
+
+  # Derived parameters (expression-valued - become bindings)
+  k_el:
+    abbr: k_el
+    value: CL / V
+    unit: 1/hr
+    desc: Elimination rate constant
+
+  half_life:
+    abbr: half_life
+    value: log(2) / k_el
+    unit: hr
+    desc: Half-life
+
+  # Mathematical functions test
+  sqrt_V:
+    abbr: sqrt_V
+    value: sqrt(V)
+    desc: Square root of volume
+
+  # Use a simple expression that doesn't have parsing ambiguity
+  exp_test:
+    abbr: exp_test
+    value: exp(-1.0)
+    desc: Exponential test
+
+Variables:
+  Drug:
+    abbr: Drug
+    initial: 0.0
+    unit: mg
+    desc: Drug amount

@@ -1,0 +1,14 @@
+blood_eos:
+  short: Blood Eosinophils
+  unit: "cells/uL"
+  range: [0, 200]
+
+feno:
+  short: Fractional Exhaled Nitric Oxide
+  unit: ppb
+  range: [0, 500]
+
+fev1:
+  short: Forced Expiratory Volume in 1s
+  unit: L
+  range: [0, 8]

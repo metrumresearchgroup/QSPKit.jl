@@ -1,0 +1,32 @@
+# Julia package and coverage output
+Manifest.toml
+Manifest-v*.toml
+*.cov
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+*.stackdump
+LocalPreferences.toml
+JuliaLocalPreferences.toml
+
+# Generated documentation and runtime output
+docs/build/
+*/docs/build/
+*/docs/site/
+logs/
+artifacts/
+.provenance/
+Rplots.pdf
+*.log
+*.tmp
+*.bak
+*.aux
+*.toc
+
+# Local package managers and editors
+.CondaPkg/
+*/.CondaPkg/
+.julia_history
+.DS_Store
+.idea/
+.vscode/

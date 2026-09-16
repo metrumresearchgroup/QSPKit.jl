@@ -1,0 +1,23 @@
+[deps]
+ConfigKit = "83bc0fb5-991d-4d5f-b655-cf5b37f0dc9f"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+InjecKit = "c459914d-a012-4e13-bbe3-220b8bf26547"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+QSPKitCore = "8bd42bac-bcf2-4262-bc9e-6e7f49448933"
+
+[sources]
+ConfigKit = {path = "../../ConfigKit"}
+InjecKit = {path = ".."}
+QSPKitCore = {path = "../../QSPKitCore"}
+
+[compat]
+ConfigKit = "0.1"
+DataFrames = "1"
+DifferentialEquations = "8"
+Documenter = "1"
+InjecKit = "0.1"
+ModelingToolkit = "11"
+QSPKitCore = "0.1"
+julia = "1.12"

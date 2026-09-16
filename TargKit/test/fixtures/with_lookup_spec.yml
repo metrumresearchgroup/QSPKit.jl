@@ -1,0 +1,32 @@
+SETUP__:
+  description: Targets with lookup
+  lookup_file: lookup_biomarkers.yml
+  glue:
+    cellsul: "cells/uL (LaTeX)"
+
+blood_eos:
+  lookup: true
+  unit.tex: <<cellsul>>
+
+feno:
+  lookup: true
+
+fev1:
+  lookup: true
+  dots:
+    weight: 2.0
+
+name:
+  short: target name
+
+value:
+  short: target value
+  type: numeric
+
+lower:
+  short: lower bound
+  type: numeric
+
+upper:
+  short: upper bound
+  type: numeric

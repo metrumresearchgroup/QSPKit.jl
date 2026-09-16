@@ -1,0 +1,5 @@
+.claude/settings.local.json
+Manifest.toml
+*.cov
+*.jld2
+docs/build/

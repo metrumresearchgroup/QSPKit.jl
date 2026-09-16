@@ -1,0 +1,8 @@
+Version: 1
+Packages:
+  - mrggsave
+  - pdftools
+  # An unrelated project package must not become a CondaR install requirement.
+  - not-a-showkit-dependency
+Repos:
+  - MPN: https://mpn.metworx.com/snapshots/stable/2026-08-24

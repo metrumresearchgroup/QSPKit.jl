@@ -1,0 +1,29 @@
+name = "CondaR"
+uuid = "02826c15-4b38-49f8-b478-6f46c11e7393"
+version = "0.1.0"
+
+[deps]
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+MD5 = "6ac74813-4b46-53a4-afec-0b5dc9d7885c"
+MicroMamba = "0b3b1443-0f03-428d-bdfb-f27f9c1191ea"
+Pidfile = "fa939f87-e72e-5be4-a000-7fc836dbe307"
+Preferences = "21216c6a-2e73-6563-6e65-726566657250"
+ProjectRoot = "e3f974f6-674d-4b8e-a3d1-5850677db852"
+RCall = "6f49c342-dc21-5d91-9882-a32aef131414"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+
+[compat]
+Downloads = "1.7.0"
+JSON = "1"
+MD5 = "0.2.3"
+RCall = "0.14"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
