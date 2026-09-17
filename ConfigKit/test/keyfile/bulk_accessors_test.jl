@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset "Bulk Accessor Functions" begin
     # Create a self-contained test keyfile with bounds

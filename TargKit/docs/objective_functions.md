@@ -273,7 +273,7 @@ x0 = log.([1.0, 2.0, 3.0])  # if transform=:log
 loss = obj(x0)
 
 # Get a full ScoreReport at the current point
-using TargKit: _build_fit_report
+using QSPKit.TargKit: _build_fit_report
 report = _build_fit_report(obj, x0)
 println(report)
 ```

@@ -109,7 +109,7 @@ data + versions + seed.
 
 2. **Typed extractors are the delivery vehicle.** A type-agnostic core stores any payload +
    open `metrics` + `kind` + `inputs` + a `fingerprints` map. Package **extensions**
-   (weakdeps, like the existing `BookKitMetaGraphsNextExt`) teach `book_extract` to pull
+   (weakdeps, like the root `QSPKitMetaGraphsNextExt`) teach `book_extract` to pull
    dependency fingerprints out of the result objects that carry them — so the *caller* never
    hand-copies `loss`/params/model. The objects already hold what we need:
    - `TargKit.FitResult` (`TargKit/src/types.jl:60`): `params`, `loss`, `report`, `converged`, `method`.

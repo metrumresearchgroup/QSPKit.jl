@@ -22,7 +22,7 @@ store and SQLite annotation database.
 ## Quick Example
 
 ```julia
-using BookKit
+using QSPKit.BookKit
 
 # After fitting a model and inspecting diagnostics...
 result = book!("PK_Phase1", :accepted;

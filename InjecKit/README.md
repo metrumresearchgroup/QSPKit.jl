@@ -17,7 +17,7 @@ A Julia package for discrete event handling in pharmacokinetic and pharmacodynam
 ## Quick Start
 
 ```julia
-using InjecKit
+using QSPKit.InjecKit
 using ModelingToolkit
 using DifferentialEquations
 

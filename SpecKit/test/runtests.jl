@@ -1,5 +1,5 @@
 using Test
-using SpecKit
+using QSPKit.SpecKit
 
 const FIXTURES = joinpath(@__DIR__, "fixtures")
 

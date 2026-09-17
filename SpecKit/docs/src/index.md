@@ -5,7 +5,7 @@ column descriptions, labels, units, ranges, decode maps, flags, lookup
 provenance, and alternate namespaces.
 
 ```julia
-using SpecKit
+using QSPKit.SpecKit
 
 metadata = load_yspec("data-spec.yml"; backend=:native)
 arm_labels = decodes(metadata, :ARM)

@@ -53,7 +53,7 @@ Variables:
 ### Step 2: Load the Keyfile
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 
 keyfile = load_keyfile("pk_params.yml")
 ```
@@ -92,7 +92,7 @@ Write your ModelingToolkit model as usual:
 ```julia
 using ModelingToolkit
 using DifferentialEquations
-using ConfigKit
+using QSPKit.ConfigKit
 
 # Define the model structure
 @variables t
@@ -235,7 +235,7 @@ This ensures physiological relationships are always maintained.
 Here's a typical QSP workflow with ConfigKit:
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 using ModelingToolkit
 using DifferentialEquations
 

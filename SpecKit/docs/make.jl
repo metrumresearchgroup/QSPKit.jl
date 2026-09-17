@@ -1,5 +1,5 @@
 using Documenter
-using SpecKit
+using QSPKit.SpecKit
 
 makedocs(
     modules=[SpecKit],

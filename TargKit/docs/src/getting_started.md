@@ -3,7 +3,7 @@
 ## Define and score targets
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 observed = targets(
     gain = (0.75, 0.4, 1.2),

@@ -1,8 +1,7 @@
-push!(LOAD_PATH,"../src/")
 using Documenter
-using InjecKit
+using QSPKit.InjecKit
 
-DocMeta.setdocmeta!(InjecKit, :DocTestSetup, :(using InjecKit, ModelingToolkit, DifferentialEquations, DataFrames); recursive=true)
+DocMeta.setdocmeta!(InjecKit, :DocTestSetup, :(using QSPKit.InjecKit, ModelingToolkit, DifferentialEquations, DataFrames); recursive=true)
 
 makedocs(;
     modules=[InjecKit],

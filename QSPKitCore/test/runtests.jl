@@ -1,5 +1,5 @@
 using Test
-using QSPKitCore
+using QSPKit.QSPKitCore
 
 Base.@kwdef struct _CoreOptions
     alpha::Float64 = 1.0

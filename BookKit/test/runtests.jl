@@ -1,8 +1,8 @@
 using Test
-using BookKit
-using StoreKit
-using TargKit            # triggers BookKitTargKitExt (book_extract(::FitResult))
-using SimKit             # triggers BookKitSimKitExt (book_extract(::SimContext))
+using QSPKit.BookKit
+using QSPKit.StoreKit
+using QSPKit.TargKit            # triggers BookKitTargKitExt (book_extract(::FitResult))
+using QSPKit.SimKit             # triggers BookKitSimKitExt (book_extract(::SimContext))
 using ModelingToolkit
 
 # A minimal MTK-backed problem for the SimKit extractor test.

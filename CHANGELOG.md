@@ -1,42 +1,12 @@
 # Changelog
 
-## QSPKit 0.1.0-alpha — 2026-08-28
+## QSPKit 0.1.0 — 2026-09-17
 
-Included package versions:
-
-- BookKit 0.1.0
-- CondaR 0.1.0
-- ConfigKit 0.1.1
-- InjecKit 0.1.0
-- QSPKitCore 0.1.0
-- QSPKitIO 0.1.0
-- QSPReports 0.1.0
-- ShowKit 0.1.0
-- SimKit 0.1.0
-- SpecKit 0.1.0
-- StoreKit 0.1.0
-- TargKit 0.4.0
-
-- Retained every active QSPKit package except the still-developing DiffKit
-  correctness boundary; packages already retired to source history remain out.
-- Added explicit Julia and dependency compatibility bounds.
-- Made every retained package part of CI.
-- Removed research plans, editor configuration, generated artifacts, and
-  unsupported package surfaces from the distribution.
-- Removed SimKit's nonfunctional `observe` builder and reduced QSPKitCore to
-  the symbolic-compilation lock actually used by InjecKit.
-- Documented the executable-input boundary for ConfigKit keyfiles.
-- Replaced project-specific examples and fixtures with synthetic material,
-  and removed a private-path integration test.
-- Fixed SimKit phase-cache keying and ConfigKit keyfile strictness, path-based
-  `solve_for` routing, problem-update strictness, and the narrow
-  ModelingToolkit/DynamicQuantities diagnostic workaround. Behavioral fixes
-  and regression tests were also applied to the source QSPKit checkout.
-- Fixed CondaR first-import RCall configuration, ShowKit provenance assertions,
-  QSPReports table/variant handling, StoreKit keyword-only file tracking, and
-  TargKit's invalid-prediction error boundary; these regression fixes were also
-  mirrored to the source checkout.
-- Removed ShowKit and SpecKit's runtime dependency-installation side effects;
-  optional R integrations now use read-only availability checks, ShowKit never
-  rewrites installed namespaces, and direct Conda dependencies are fixed to
-  reviewed versions. The source checkout received the same behavioral changes.
+- Introduced QSPKit as one installable and versioned Julia package.
+- Organized the retained domain APIs as public `QSPKit.<Component>` submodules.
+- Added a curated root export surface for common configuration, dosing, and
+  simulation workflows.
+- Unified package testing under `Pkg.test("QSPKit")`.
+- Retained component-level validation, coverage, documentation, and differential
+  execution caching as internal qualification details.
+- Published one aggregate QSPKit scorecard and one deterministic source tarball.

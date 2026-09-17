@@ -1,4 +1,4 @@
-using CondaR
+using QSPKit.CondaR
 using Documenter
 
 makedocs(

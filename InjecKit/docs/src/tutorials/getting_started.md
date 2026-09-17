@@ -16,7 +16,7 @@ InjecKit.jl integrates seamlessly with ModelingToolkit.jl to add dosing events a
 ### Setting Up a Simple Model
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 
 # Define a simple one-compartment PK model
 @parameters k V

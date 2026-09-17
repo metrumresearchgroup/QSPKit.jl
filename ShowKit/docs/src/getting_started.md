@@ -15,7 +15,7 @@ By default it reads `pkgr.yml` from that project's root; it never invokes pkgr o
 uses the project's renv library.
 
 ```julia
-using ShowKit
+using QSPKit.ShowKit
 ShowKit.configure_r!(mode=:latest)   # optional: ignore pkgr.yml
 ShowKit.configure_r!(mode=:project)  # restore the default project policy
 ```
@@ -30,7 +30,7 @@ update/offline behavior, shared preferences, and native prerequisites.
 
 ```julia
 # CondaR is loaded automatically by ShowKit
-using ShowKit
+using QSPKit.ShowKit
 using DataFrames
 
 # Create some sample data

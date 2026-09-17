@@ -28,7 +28,7 @@ This is fine for occasional updates, but in a parameter estimation loop with 10,
 ConfigKit's `update()` function uses intelligent caching to make parameter updates ~50x faster:
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 
 # First call builds cache (~2ms)
 new_prob = update(prob, [CL => 10.0])
@@ -44,7 +44,7 @@ new_prob = update(prob, [CL => 20.0])
 ### Updating ODEProblems
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 using ModelingToolkit
 using DifferentialEquations
 

@@ -8,7 +8,7 @@ other tools can print or render.
 ## Parameter workflow
 
 ```julia
-using ConfigKit, QSPReports
+using QSPKit.ConfigKit, QSPKit.QSPReports
 
 kf = load_keyfile("model.yml")
 fit = parameter_update(

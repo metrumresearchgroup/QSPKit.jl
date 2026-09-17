@@ -16,7 +16,7 @@ Pkg.develop(path="path/to/QSPKit/SimKit")
 Every pipeline starts from a `SimContext` wrapping an existing ODEProblem:
 
 ```julia
-using SimKit
+using QSPKit.SimKit
 using DifferentialEquations
 
 sim = SimContext(prob; solver=CVODE_BDF(), reltol=1e-4, maxiters=200000)
@@ -29,7 +29,7 @@ sim = SimContext(prob; solver=CVODE_BDF(), reltol=1e-4, maxiters=200000)
 ctx = sim |> with([:ka => 0.5, :CL => 1.0])
 
 # Stage dosing events
-using InjecKit: ev
+using QSPKit.InjecKit: ev
 ctx = ctx |> events([ev(time=0.0, cmt=:Depot, amt=100.0)])
 ```
 

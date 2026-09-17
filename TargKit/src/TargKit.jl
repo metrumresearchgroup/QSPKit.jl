@@ -18,8 +18,8 @@ using DataFramesMeta
 using CSV
 using OrderedCollections: OrderedDict
 import Tables
-import ConfigKit
-import QSPKitCore
+import ..ConfigKit
+import ..QSPKitCore
 import SymbolicIndexingInterface
 
 # ============================================================

@@ -1,7 +1,7 @@
 # Tests for internal helper functions in InjecKit
 # Unit tests for functions in variable_resolution.jl, infusion_handling.jl, event_processing.jl
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

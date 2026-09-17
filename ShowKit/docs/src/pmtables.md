@@ -16,7 +16,7 @@ The pmtables workflow has two stages:
 Groups as columns, statistics as rows:
 
 ```julia
-using ShowKit, DataFrames
+using QSPKit.ShowKit, DataFrames
 
 tbl = pt_cont_wide(df; cols=[:WT, :AGE, :SCR, :ALB], by="STUDYf") |>
       st_units(WT="kg", AGE="years", SCR="mg/dL", ALB="g/dL") |>
@@ -173,7 +173,7 @@ table automatically in the preview pane.
 ## Complete Example
 
 ```julia
-using ShowKit, DataFrames, CSV
+using QSPKit.ShowKit, DataFrames, CSV
 
 # Load NONMEM output
 df = CSV.read("run001.csv", DataFrame)

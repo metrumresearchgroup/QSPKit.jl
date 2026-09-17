@@ -18,7 +18,7 @@ InjecKit.jl provides a comprehensive interface for incorporating dosing events, 
 ## Quick Start
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 
 # Define a simple PK model
 @independent_variables t

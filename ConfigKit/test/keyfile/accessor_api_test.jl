@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 import DynamicQuantities as DQ
 
 @testset "Keyfile Accessor API" begin

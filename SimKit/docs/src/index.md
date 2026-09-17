@@ -21,7 +21,7 @@ SimKit is domain-agnostic — it works with any ModelingToolkit ODE model, not j
 ## Quick Example
 
 ```julia
-using SimKit
+using QSPKit.SimKit
 using DifferentialEquations
 
 sim = SimContext(prob; solver=CVODE_BDF(), reltol=1e-4)

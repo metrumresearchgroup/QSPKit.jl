@@ -43,7 +43,7 @@ InjecKit.jl detects continuous infusions using the same logic as NONMEM:
 ### Basic Example
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 
 # Define a two-compartment model
 @parameters k12 k21 k10 V1 V2

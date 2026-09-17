@@ -1,5 +1,5 @@
-using Test, SimKit, ModelingToolkit, DataFrames
-using InjecKit: ev
+using Test, QSPKit.SimKit, ModelingToolkit, DataFrames
+using QSPKit.InjecKit: ev
 
 @testset "Periodic steady state" begin
     @test !has_steady_state([ev(cmt=:A, amt=10)])

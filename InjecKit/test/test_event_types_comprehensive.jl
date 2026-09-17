@@ -1,7 +1,7 @@
 # Comprehensive tests for all event types: DataFrame, Vector{IEvent}, Vector{SymbolicDiscreteCallback}
 # Tests functionality and correctness across all input formats
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

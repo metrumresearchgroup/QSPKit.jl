@@ -43,7 +43,7 @@ TargKit/
 A complete calibration in under 30 lines:
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 # 1. Define your targets
 targets = @targetset :demo begin

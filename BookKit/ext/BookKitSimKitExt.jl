@@ -8,8 +8,8 @@ module BookKitSimKitExt
 # and dosing events are fingerprinted separately. All are in-memory deps →
 # diff-at-rebook staleness.
 
-using BookKit
-using SimKit: SimContext, PopulationResult, to_dataframe
+using ..BookKit
+using ..SimKit: SimContext, PopulationResult, to_dataframe
 using ModelingToolkit: equations
 using SHA
 

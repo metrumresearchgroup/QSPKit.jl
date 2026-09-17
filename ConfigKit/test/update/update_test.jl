@@ -1,9 +1,10 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 using OrdinaryDiffEq
 using SciMLBase
 using Symbolics
 using ModelingToolkitBase
+using SciMLStructures: Tunable, canonicalize
 using Unitful
 @testset "Update Engine Tests" begin
 
@@ -80,6 +81,8 @@ using Unitful
         cache = UpdateCache(prob, (; α = 0.0, β = 0.0); strict=false)
 
         prob1 = update!(cache, (; α = 4.0, β = 1.5); build_initializeprob=false)
+        prob1_tunable, = canonicalize(Tunable(), prob1.p)
+        @test prob1_tunable !== cache.tunable_buffer
         @test prob1.ps[α] ≈ 4.0
         @test prob1.ps[β] ≈ 1.5
         @test prob.ps[α] ≈ 2.0
@@ -88,6 +91,8 @@ using Unitful
         prob2 = update!(cache, [6.0, 2.5]; build_initializeprob=false)
         @test prob2.ps[α] ≈ 6.0
         @test prob2.ps[β] ≈ 2.5
+        @test prob1.ps[α] ≈ 4.0
+        @test prob1.ps[β] ≈ 1.5
 
         pair_cache = UpdateCache(prob, [α => 0.0, β => 0.0]; strict=false)
         prob3 = update!(pair_cache, [α => 7.0, β => 3.5];
@@ -96,6 +101,42 @@ using Unitful
         @test prob3.ps[β] ≈ 3.5
 
         @test_throws ArgumentError update!(cache, (; β = 1.0, α = 2.0))
+    end
+
+    @testset "UpdateCache solutions own tunable parameters" begin
+        @independent_variables t_alias
+        @parameters k_alias=1.0
+        @variables x_alias(t_alias)=1.0 y_alias(t_alias)
+        D_alias = Differential(t_alias)
+        @named alias_model = System(
+            [D_alias(x_alias) ~ -k_alias * x_alias],
+            t_alias;
+            observed=[y_alias ~ k_alias * x_alias],
+        )
+        alias_sys = mtkcompile(alias_model)
+        alias_prob = ODEProblem(alias_sys, [], (0.0, 1.0))
+        cache = UpdateCache(alias_prob, (:k_alias,); strict=false)
+
+        solve_with(k) = with_update_cache(
+            cache,
+            (k_alias=k,);
+            u0=copy(alias_prob.u0),
+            tspan=(0.0, 1.0),
+        ) do updated
+            solve(updated, Tsit5(); reltol=1e-10, abstol=1e-10)
+        end
+
+        first_sol = solve_with(1.0)
+        y_before = first_sol[alias_sys.y_alias][end]
+        first_tunable, = canonicalize(Tunable(), first_sol.prob.p)
+        @test first_tunable !== cache.tunable_buffer
+
+        second_sol = solve_with(10.0)
+        @test second_sol[alias_sys.y_alias][end] ≈
+              10 * second_sol[alias_sys.x_alias][end] rtol=1e-10
+        @test first_sol[alias_sys.y_alias][end] ≈ y_before rtol=1e-12
+        @test first_sol[alias_sys.y_alias][end] ≈
+              first_sol[alias_sys.x_alias][end] rtol=1e-10
     end
 
     # =================================================================
@@ -160,12 +201,19 @@ using Unitful
         cache = UpdateCache(prob, (:x, :y); strict=false)
 
         prob1 = update!(cache, (; x = 8.0, y = 3.0))
+        @test prob1.u0 !== cache.u0_buffer
         @test prob1[x] ≈ 8.0
         @test prob1[y] ≈ 3.0
         @test prob1.ps[x0_key] ≈ 8.0
         @test prob1.ps[y0_key] ≈ 3.0
         @test prob[x] ≈ 1.0
         @test prob.ps[x0_key] ≈ 1.0
+
+        prob2 = update!(cache, (; x = 4.0, y = 2.0))
+        @test prob2[x] ≈ 4.0
+        @test prob2[y] ≈ 2.0
+        @test prob1[x] ≈ 8.0
+        @test prob1[y] ≈ 3.0
     end
 
     @testset "Symbolic initial conditions stay synchronized" begin

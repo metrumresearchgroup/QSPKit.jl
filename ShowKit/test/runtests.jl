@@ -1,5 +1,5 @@
 using Test
-using ShowKit
+using QSPKit.ShowKit
 using DataFrames
 
 @testset "ShowKit" begin

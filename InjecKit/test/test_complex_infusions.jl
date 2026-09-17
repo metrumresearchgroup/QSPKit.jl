@@ -1,7 +1,7 @@
 # Tests for complex infusion scenarios in InjecKit
 # Tests overlapping infusions, edge cases, and multi-compartment infusion scenarios
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

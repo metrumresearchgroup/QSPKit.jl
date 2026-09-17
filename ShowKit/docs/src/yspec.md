@@ -11,7 +11,7 @@ A yspec YAML file describes every column in your dataset: name, label, units, ty
 Generate pmplots-format label strings from a yspec metadata object:
 
 ```julia
-using ShowKit, SpecKit
+using QSPKit.ShowKit, QSPKit.SpecKit
 
 spec = load_yspec("data/derived/pk.yml")
 
@@ -77,7 +77,7 @@ labs = axis_col_labs(mock_spec, [:WT, :AGE])
 ## Complete Example
 
 ```julia
-using ShowKit, SpecKit, DataFrames, CSV
+using QSPKit.ShowKit, QSPKit.SpecKit, DataFrames, CSV
 
 # Load spec and data
 spec = load_yspec("data/derived/pk.yml")

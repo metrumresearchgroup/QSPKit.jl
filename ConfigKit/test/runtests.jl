@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset verbose=true "ConfigKit Full Suite" begin
 

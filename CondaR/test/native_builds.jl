@@ -1,5 +1,5 @@
 # Opt-in, real source-build regression on the host OS/CPU. See README.
-using CondaR, Test
+using QSPKit.CondaR, Test
 C = CondaR
 cache = mktempdir()
 resolution = isempty(ARGS) ? C._resolve_native(cache) : C.TOML.parsefile(joinpath(abspath(ARGS[1]), "condar-native.toml"))

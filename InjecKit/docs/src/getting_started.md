@@ -13,7 +13,7 @@ the package tests:
 
 ```julia
 using DataFrames
-using InjecKit
+using QSPKit.InjecKit
 using ModelingToolkitBase
 using OrdinaryDiffEq
 

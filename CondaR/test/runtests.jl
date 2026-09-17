@@ -1,5 +1,5 @@
 using Test
-using CondaR
+using QSPKit.CondaR
 
 @test CondaR._R_MODULE[] === nothing
 include("native.jl")

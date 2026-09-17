@@ -1,7 +1,7 @@
 # Tests for empty and edge case inputs in InjecKit
 # Tests handling of empty DataFrames, empty event vectors, and unusual inputs
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

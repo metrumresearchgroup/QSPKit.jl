@@ -1,7 +1,7 @@
 module InjecKit
 
 using CSV
-import ConfigKit
+import ..ConfigKit
 using DataFrames
 import DiffEqCallbacks
 using LRUCache
@@ -10,7 +10,7 @@ const MTK = ModelingToolkitBase
 using SymbolicIndexingInterface
 using SymbolicUtils
 using Symbolics
-using QSPKitCore
+using ..QSPKitCore
 import OrdinaryDiffEq
 import OrdinaryDiffEq: ODEProblem
 import SciMLBase

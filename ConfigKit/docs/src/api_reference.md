@@ -31,7 +31,7 @@ Load a YAML keyfile and return an accessor object for ergonomic access to parame
 
 **Example:**
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 
 # Load with default variant
 keyfile = load_keyfile("params.yml")
@@ -84,7 +84,7 @@ Populate a ModelingToolkit system with values from a keyfile. This is the primar
 **Example:**
 ```julia
 using ModelingToolkit
-using ConfigKit
+using QSPKit.ConfigKit
 
 # Define your model
 @variables t Central(t) Depot(t)

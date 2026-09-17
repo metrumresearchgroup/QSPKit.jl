@@ -26,7 +26,7 @@ ShowKit brings all of these into Julia with native types, `+` operator chaining,
 ## Quick Example
 
 ```julia
-using ShowKit      # R is provisioned automatically on first use
+using QSPKit.ShowKit      # R is provisioned automatically on first use
 using DataFrames
 
 df = DataFrame(TIME=0:0.5:24, DV=rand(49), PRED=rand(49))

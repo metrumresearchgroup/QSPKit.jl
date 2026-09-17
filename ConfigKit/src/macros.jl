@@ -19,7 +19,7 @@ observable.
 # Usage
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 using ModelingToolkitBase: @parameters, @variables
 
 # Inside a model function:

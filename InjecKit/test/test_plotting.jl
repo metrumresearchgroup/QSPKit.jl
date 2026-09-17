@@ -1,7 +1,7 @@
 # Tests for plotting utilities in InjecKit
 # Tests the plot_infusion_history function
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

@@ -9,7 +9,7 @@ chaining, display integration, and yspec metadata support.
 
 # Quick Start
 ```julia
-using ShowKit      # R is provisioned automatically on first use
+using QSPKit.ShowKit      # R is provisioned automatically on first use
 
 p = ggplot(df, aes(x=:TIME, y=:DV)) +
     geom_point() +
@@ -21,7 +21,7 @@ p = ggplot(df, aes(x=:TIME, y=:DV)) +
 module ShowKit
 
 using DataFrames
-using CondaR
+using ..CondaR
 
 # R backend (uses CondaR directly)
 include("r_backend.jl")

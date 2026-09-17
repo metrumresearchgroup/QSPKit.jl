@@ -12,13 +12,13 @@ Edit only the manual section unless you are changing the generator or `tools/age
 - Purpose: Dosing events, infusions, event composition, and event-aware solve paths.
 - Local dependencies: `ConfigKit`, `QSPKitCore`
 - Adjacent packages to inspect for shared behavior: `BayesKit`, `ConfigKit`, `SensKit`, `SimKit`
-- Files: 13 source, 16 test, 9 docs
+- Files: 13 source, 17 test, 9 docs
 - README: `InjecKit/README.md`
 - Docs directory: `InjecKit/docs`
 
 ## Acceptance
 
-- `julia --project=InjecKit/test --startup-file=no -e 'include("InjecKit/test/runtests.jl")'`
+- `JULIA_LOAD_PATH=.:validation:@stdlib julia --project=. --startup-file=no -e 'using QSPKit; include("InjecKit/test/runtests.jl")'`
 <!-- END GENERATED: agent-context -->
 
 <!-- BEGIN MANUAL: agent-guidance -->

@@ -9,7 +9,7 @@ Build complex dosing protocols from simpler pieces using `seq` and `combine`.
 Chain events so that `events2` starts after `events1` finishes (including repeat doses from `ii`/`addl`):
 
 ```julia
-using InjecKit: ev, seq
+using QSPKit.InjecKit: ev, seq
 
 # Loading dose, then maintenance
 loading = [ev(cmt=:DEPOT, amt=600)]
@@ -26,7 +26,7 @@ protocol = seq(loading, maintenance)
 Merge two event vectors and sort by time:
 
 ```julia
-using InjecKit: ev, combine
+using QSPKit.InjecKit: ev, combine
 
 drug_a = [ev(cmt=:DEPOT_A, amt=100, ii=14, addl=24)]
 drug_b = [ev(cmt=:DEPOT_B, amt=200, ii=28, addl=12)]
@@ -42,7 +42,7 @@ Common dosing shorthand for frequently used schedules.
 ### `QD(amt, cmt; days=1)` — Once Daily
 
 ```julia
-using InjecKit: QD
+using QSPKit.InjecKit: QD
 
 events = QD(100.0, :DEPOT; days=28)
 # Equivalent to: ev(cmt=:DEPOT, amt=100.0, ii=1.0, addl=27)
@@ -51,7 +51,7 @@ events = QD(100.0, :DEPOT; days=28)
 ### `BID(amt, cmt; days=1)` — Twice Daily
 
 ```julia
-using InjecKit: BID
+using QSPKit.InjecKit: BID
 
 events = BID(50.0, :DEPOT; days=14)
 # Equivalent to: ev(cmt=:DEPOT, amt=50.0, ii=0.5, addl=27)
@@ -60,7 +60,7 @@ events = BID(50.0, :DEPOT; days=14)
 ### `Q4W(amt, cmt; doses=1)` — Every 4 Weeks
 
 ```julia
-using InjecKit: Q4W
+using QSPKit.InjecKit: Q4W
 
 events = Q4W(210.0, :DEPOT; doses=12)
 # Equivalent to: ev(cmt=:DEPOT, amt=210.0, ii=28.0, addl=11)
@@ -69,7 +69,7 @@ events = Q4W(210.0, :DEPOT; doses=12)
 ### `loading_then(loading_amt, maint_amt, cmt; q, doses)` — Loading + Maintenance
 
 ```julia
-using InjecKit: loading_then
+using QSPKit.InjecKit: loading_then
 
 events = loading_then(600.0, 300.0, :DEPOT; q=14, doses=24)
 # Loading dose of 600 at t=0
@@ -83,7 +83,7 @@ Uses `seq()` internally — the maintenance regimen is chained after the loading
 Templates and composition work together naturally:
 
 ```julia
-using InjecKit: QD, Q4W, seq, combine
+using QSPKit.InjecKit: QD, Q4W, seq, combine
 
 # Two-phase oral therapy: 7 days loading, then 28 days maintenance
 protocol = seq(

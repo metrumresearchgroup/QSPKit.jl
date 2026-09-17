@@ -1,5 +1,5 @@
 # Test simultaneous events at the same time point for all event types
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

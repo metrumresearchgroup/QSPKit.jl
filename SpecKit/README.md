@@ -15,7 +15,7 @@ SpecKit loads [yspec](https://github.com/metrumresearchgroup/yspec) YAML files t
 ## Quick Start
 
 ```julia
-using SpecKit
+using QSPKit.SpecKit
 
 # Load a yspec file (auto-selects R backend if available, falls back to native)
 spec = load_yspec("data/derived/pk.yml")
@@ -38,7 +38,7 @@ ns_spec = namespace(spec, "tex")
 ## With ShowKit
 
 ```julia
-using ShowKit, SpecKit
+using QSPKit.ShowKit, QSPKit.SpecKit
 
 spec = load_yspec("data/derived/pk.yml")
 labs = axis_col_labs(spec, [:DV, :PRED, :TIME, :WT])
@@ -70,6 +70,6 @@ Pkg.develop(path="path/to/QSPKit/SpecKit")
 For the R backend, also load CondaR before SpecKit:
 
 ```julia
-using CondaR   # loads R runtime
-using SpecKit  # auto-detects R availability
+using QSPKit.CondaR   # loads R runtime
+using QSPKit.SpecKit  # auto-detects R availability
 ```

@@ -7,7 +7,7 @@ This tutorial covers advanced features and techniques for complex modeling scena
 ### Repeated Dosing with Intervals
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 
 # Create repeated dosing events programmatically
 function create_repeated_dosing(dose_times, dose_amounts, compartment)

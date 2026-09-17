@@ -1,5 +1,5 @@
 # Opt-in live current-upstream check, with no dependence on the caller's policy.
-using CondaR, Test
+using QSPKit.CondaR, Test
 mktempdir() do root
     write(joinpath(root, "Project.toml"), "[deps]\n")
     write(joinpath(root, "pkgr.yml"), "invalid YAML: [must be ignored")

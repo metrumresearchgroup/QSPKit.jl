@@ -1,8 +1,8 @@
 using Test
-using SimKit
+using QSPKit.SimKit
 using DifferentialEquations: Tsit5
 using ModelingToolkit
-using InjecKit: ev, IEvent
+using QSPKit.InjecKit: ev, IEvent
 using DataFrames
 
 # ============================================================
@@ -226,6 +226,35 @@ base_prob = ODEProblem(sys, [], (0.0, 100.0))
         sols = result(arms)
         @test haskey(sols, :fast)
         @test haskey(sols, :slow)
+    end
+
+    @testset "chained parameter-only branch solutions retain observed parameters" begin
+        @parameters scale_alias=1.0
+        @variables X_alias(t)=1.0 Y_alias(t)
+        @named alias_model = System(
+            [D(X_alias) ~ -scale_alias * X_alias],
+            t;
+            observed=[Y_alias ~ scale_alias * X_alias],
+        )
+        alias_sys = mtkcompile(alias_model)
+        alias_prob = ODEProblem(alias_sys, [], (0.0, 1.0))
+        baseline = SimContext(alias_prob; solver=Tsit5()) |>
+            simulate(1.0; name=:baseline, reltol=1e-10, abstol=1e-10)
+
+        arms = branch(
+            baseline,
+            :two => with(:scale_alias => 2.0) >>
+                simulate(1.0; name=:two, reltol=1e-10, abstol=1e-10),
+            :ten => with(:scale_alias => 10.0) >>
+                simulate(1.0; name=:ten, reltol=1e-10, abstol=1e-10),
+        )
+
+        two = arms[:two].sol
+        ten = arms[:ten].sol
+        @test two[alias_sys.Y_alias][end] ≈
+              2 * two[alias_sys.X_alias][end] rtol=1e-10
+        @test ten[alias_sys.Y_alias][end] ≈
+              10 * ten[alias_sys.X_alias][end] rtol=1e-10
     end
 
     # ============================================================

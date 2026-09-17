@@ -5,8 +5,8 @@ module BookKitTargKitExt
 # for the parameters and the producing source code (the latter computed inside
 # TargKit.fit() and carried on FitResult.source_fp).
 
-using BookKit
-using TargKit: FitResult
+using ..BookKit
+using ..TargKit: FitResult
 using SHA
 
 function BookKit.book_extract(r::FitResult)

@@ -7,7 +7,7 @@ ConfigKit integrates with [Accessors.jl](https://github.com/JuliaObjects/Accesso
 `MTKParamLens` is an Accessors.jl-compatible lens that wraps `ConfigKit.update` for reading and writing MTK parameters on an `ODEProblem`.
 
 ```julia
-using ConfigKit, Accessors
+using QSPKit.ConfigKit, Accessors
 
 lens = MTKParamLens(:CL)
 
@@ -46,7 +46,7 @@ Throws an error if the parameter has no `bounds` defined in the keyfile.
 ### Parameter Sweep
 
 ```julia
-using ConfigKit, Accessors
+using QSPKit.ConfigKit, Accessors
 
 cl_lens = @param(CL)
 

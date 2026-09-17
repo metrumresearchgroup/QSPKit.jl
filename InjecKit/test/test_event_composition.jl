@@ -1,6 +1,6 @@
 # Tests for event composition (seq, combine) and regimen templates (QD, BID, Q4W, loading_then)
 
-using InjecKit
+using QSPKit.InjecKit
 using Test
 
 @testset "Event Composition" begin

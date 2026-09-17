@@ -7,7 +7,7 @@ visible and allowing readers to supply defaults for newly added fields.
 ## Basic use
 
 ```julia
-using QSPKitIO
+using QSPKit.QSPKitIO
 
 spec = ArchiveSpec(
     "CalibrationResult";

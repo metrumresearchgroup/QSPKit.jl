@@ -24,7 +24,7 @@ We have four biomarker targets with different measurement characteristics:
 ## Step 1: Define Targets with Error Models
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 targets = @targetset :baseline begin
     default_predict(ctx, t) = ctx[t.name]
@@ -139,7 +139,7 @@ result_polish = fit(obj_mle; method=:lbfgs, x0=result_mle.x, lbfgs_iters=500)
 ## Complete Script
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 # Targets with error models
 targets = @targetset :baseline begin

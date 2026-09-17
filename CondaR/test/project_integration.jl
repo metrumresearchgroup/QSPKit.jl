@@ -5,7 +5,7 @@ Pkg.activate(root)
 Pkg.develop(path=dirname(@__DIR__))
 Pkg.instantiate()
 cp(joinpath(@__DIR__, "fixtures", "mpn", "pkgr.yml"), joinpath(root, "pkgr.yml"))
-using CondaR
+using QSPKit.CondaR
 
 @testset "MPN policy with current compatible native packages" begin
     @test CondaR._R_MODULE[] === nothing

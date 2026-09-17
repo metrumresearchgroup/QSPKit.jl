@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset "ParameterSet" begin
     # Create a self-contained test keyfile

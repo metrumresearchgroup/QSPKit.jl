@@ -1,5 +1,5 @@
 using Documenter
-using QSPKitIO
+using QSPKit.QSPKitIO
 
 makedocs(;
     modules=[QSPKitIO],

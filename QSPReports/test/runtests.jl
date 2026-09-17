@@ -1,7 +1,7 @@
 using Test
-using QSPReports
+using QSPKit.QSPReports
 using DataFrames
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset "QSPReports actions" begin
     actions = NamedTuple[]

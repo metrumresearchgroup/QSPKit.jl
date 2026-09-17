@@ -2,7 +2,7 @@ module BookKit
 
 using Dates
 using SHA
-using StoreKit
+using ..StoreKit
 using LinearAlgebra: BLAS
 
 include("types.jl")

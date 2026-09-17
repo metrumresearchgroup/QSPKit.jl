@@ -1,5 +1,5 @@
 using Documenter
-using QSPReports
+using QSPKit.QSPReports
 
 makedocs(;
     modules=[QSPReports],

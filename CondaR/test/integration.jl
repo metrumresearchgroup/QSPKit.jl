@@ -1,6 +1,6 @@
 # Opt-in native host check: installs R/packages on a clean machine.
 # Run from QSPKit: julia --project=CondaR/test CondaR/test/integration.jl
-using Test, CondaR
+using Test, QSPKit.CondaR
 
 @testset "Native R provisioning and bridge" begin
     @test CondaR._R_MODULE[] === nothing

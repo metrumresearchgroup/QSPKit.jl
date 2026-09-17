@@ -6,7 +6,7 @@ module BookKitBayesKitExt
 # no convergence flag (convergence is advisory via diagnostics), so status_hint is
 # :accepted; pass status= to override.
 
-using BookKit
+using QSPKit.BookKit
 using BayesKit: BayesResult
 
 function BookKit.book_extract(r::BayesResult)

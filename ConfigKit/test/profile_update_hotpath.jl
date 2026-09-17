@@ -3,7 +3,7 @@
 # parameter/state update patterns, with equivalence checks before timing.
 #
 # Run from the QSPKit repo root:
-#   julia --project=ConfigKit/test --startup-file=no ConfigKit/test/profile_update_hotpath.jl
+#   JULIA_LOAD_PATH=.:validation:@stdlib julia --project=. --startup-file=no ConfigKit/test/profile_update_hotpath.jl
 #
 # Useful knobs:
 #   CK_PROFILE_ITERS=250
@@ -14,7 +14,7 @@
 #   CK_PROFILE_OUTDIR=outputs/my_profile
 
 using BenchmarkTools: prettytime, prettymemory
-using ConfigKit
+using QSPKit.ConfigKit
 using Dates
 using ForwardDiff
 using ModelingToolkitBase
@@ -569,7 +569,7 @@ function build_cases(; include_unsafe::Bool = false)
             maker = make_configkit_param, score = (ctx, prob) -> param_score(ctx.param, prob),
             runner = make_runner(make_configkit_param, (ctx, prob) -> param_score(ctx.param, prob))),
         ProfileCase(name = "update_cache_param_nt", group = "param",
-            description = "ConfigKit.UpdateCache + update! parameter workspace; returned problem is cache-borrowed",
+            description = "ConfigKit.UpdateCache + update! parameter workspace with owned returned parameters",
             maker = make_update_cache_param, score = (ctx, prob) -> param_score(ctx.param, prob),
             runner = make_runner(make_update_cache_param, (ctx, prob) -> param_score(ctx.param, prob))),
         ProfileCase(name = "naive_remake_param_map", group = "param", fraction = 0.25,

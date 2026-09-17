@@ -91,7 +91,7 @@ Adding `pkgr.yml` is recognized in the next session.
 ## Select a mode
 
 ```julia
-using ShowKit
+using QSPKit.ShowKit
 ShowKit.configure_r!(mode=:latest)   # ignore pkgr.yml
 ShowKit.configure_r!(mode=:project)  # follow pkgr.yml and refresh; default mode
 ```

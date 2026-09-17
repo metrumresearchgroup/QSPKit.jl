@@ -2,7 +2,7 @@ module QSPReports
 
 using DataFrames
 using YAML
-using ConfigKit
+using ..ConfigKit
 
 export report_action, push_action!, rank_actions, print_action_list
 export print_section, print_key_values

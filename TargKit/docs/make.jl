@@ -1,5 +1,5 @@
 using Documenter
-using TargKit
+using QSPKit.TargKit
 
 makedocs(;
     modules=[TargKit],

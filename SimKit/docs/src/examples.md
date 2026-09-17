@@ -13,7 +13,7 @@ result = sim |>
 ## Combination Therapy
 
 ```julia
-using InjecKit: combine
+using QSPKit.InjecKit: combine
 
 combo_params = merge(drug_a_params, drug_b_params)
 combo_events = combine(drug_a_events, drug_b_events)

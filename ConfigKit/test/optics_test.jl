@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 using Accessors
 using OrdinaryDiffEq
 using SciMLBase

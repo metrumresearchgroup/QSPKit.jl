@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 using OrderedCollections
 
 @testset "YAML Parsing Edge Cases" begin

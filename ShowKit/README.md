@@ -14,8 +14,8 @@
 ## Quick Start
 
 ```julia
-using CondaR       # loads bundled R
-using ShowKit
+using QSPKit.CondaR       # loads bundled R
+using QSPKit.ShowKit
 using DataFrames
 
 df = DataFrame(TIME=0:0.5:24, DV=rand(49), PRED=rand(49))
@@ -79,7 +79,7 @@ consuming project's `pkgr.yml` when present. CondaR owns a private installation;
 project renv libraries are not used or modified.
 
 ```julia
-using ShowKit
+using QSPKit.ShowKit
 ShowKit.configure_r!(mode=:latest)   # optional: ignore pkgr.yml
 ShowKit.configure_r!(mode=:project)  # default: follow project policy
 ```

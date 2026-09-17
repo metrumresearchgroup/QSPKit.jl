@@ -23,7 +23,7 @@ We have:
 ## Step 1: MU1 -- Baseline Fit (LS, no priors)
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 # --- Baseline targets ---
 baseline = @targetset :baseline begin

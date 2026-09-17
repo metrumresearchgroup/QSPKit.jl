@@ -1,4 +1,4 @@
-using SimKit
+using QSPKit.SimKit
 using Documenter
 
 makedocs(;

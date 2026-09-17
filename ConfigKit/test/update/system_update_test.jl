@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset "System Level Updates" begin
     @independent_variables t

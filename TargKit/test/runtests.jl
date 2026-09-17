@@ -1,5 +1,5 @@
 using Test
-using TargKit
+using QSPKit.TargKit
 using DataFrames
 using Optimization
 using OptimizationOptimJL

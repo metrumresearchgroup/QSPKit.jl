@@ -1,7 +1,7 @@
 # Tests for error handling in InjecKit
 # Tests error messages and validation failures
 
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

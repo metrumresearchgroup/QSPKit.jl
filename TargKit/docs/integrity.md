@@ -36,7 +36,7 @@ lock_hashes!(targets_file; lockfile=nothing)
 ### Example
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 # Generate lockfile
 lock_hashes!("model/targets.jl")
@@ -116,7 +116,7 @@ baseline = @targetset :baseline begin
 end
 
 # 2. Generate lockfile
-using TargKit
+using QSPKit.TargKit
 lock_hashes!("model/targets.jl")
 # Writes model/targets.lock
 

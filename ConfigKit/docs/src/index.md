@@ -95,7 +95,7 @@ Variables:
 ### 2. Load and Use
 
 ```julia
-using ConfigKit
+using QSPKit.ConfigKit
 using ModelingToolkit
 using DifferentialEquations
 

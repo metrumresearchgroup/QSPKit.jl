@@ -9,7 +9,7 @@ pmplots assumes NONMEM-style column names: `DV`, `PRED`, `IPRED`, `CWRES`, `NPDE
 ## Goodness-of-Fit Plots
 
 ```julia
-using ShowKit, DataFrames
+using QSPKit.ShowKit, DataFrames
 
 # DV vs PRED
 p1 = dv_pred(df)
@@ -151,7 +151,7 @@ pm_grid(plots; ncol=3)
 ## Complete Diagnostic Panel Example
 
 ```julia
-using ShowKit, DataFrames
+using QSPKit.ShowKit, DataFrames
 
 # Load your NONMEM output
 df = CSV.read("run001.csv", DataFrame)

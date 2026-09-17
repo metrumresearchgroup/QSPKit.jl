@@ -834,11 +834,10 @@ Caller-owned workspace for repeated `ConfigKit.update!` calls with one fixed key
 
 `UpdateCache` is intentionally not a global cache. It owns mutable buffers used by
 `update!`, so callers that evaluate in parallel should create one cache per task,
-thread, subject, or solver workspace. The `ODEProblem` returned by `update!` may
-borrow those buffers and is only valid until the next `update!` call on the same
-cache. Use ordinary `update` when the returned problem must be persistent, or
-`with_update_cache` when a shared cache must be guarded while the returned problem
-is consumed.
+thread, subject, or solver workspace. Scratch buffers are copied into the returned
+`ODEProblem`, so a later update on the same cache cannot change an earlier problem
+or a solution that retains it. `with_update_cache` additionally guards shared-cache
+mutation for the duration of the callback.
 """
 function UpdateCache(prob::SciMLBase.ODEProblem, raw_keys; strict::Bool=true)
     raw_tuple = Tuple(raw_keys)
@@ -891,7 +890,9 @@ function _update_from_cache_values!(cache::UpdateCache; kwargs...)
         copyto!(cache.u0_buffer, cache.base_u0)
         plan.state_setter(cache.u0_buffer, cache.valid_values)
         build_initializeprob, remake_kwargs = _split_build_initializeprob(kwargs, false)
-        new_prob = SciMLBase.remake(prob; u0=cache.u0_buffer,
+        # The remade problem can outlive this cache call (most notably through
+        # `ODESolution.prob`), so it must not retain the reusable scratch buffer.
+        new_prob = SciMLBase.remake(prob; u0=copy(cache.u0_buffer),
             build_initializeprob=build_initializeprob, remake_kwargs...)
         return _sync_initial_parameters_from_u0!(cache, new_prob)
     end
@@ -912,7 +913,10 @@ function _update_from_cache_values!(cache::UpdateCache; kwargs...)
     # initialization writes `.initials` in place, so without a private copy the cached
     # base drifts toward the dosing steady state across repeated solves of the same
     # subject, making logdensity non-deterministic. Copy so `.initials` is private here.
-    ps_new = replace(Tunable(), copy(ps), cache.tunable_buffer)
+    # Keep the cache vector as scratch only. An ODESolution retains its problem,
+    # and MTK evaluates observed quantities from `sol.prob.p` on demand; sharing
+    # this vector would let the next cache update silently change older results.
+    ps_new = replace(Tunable(), copy(ps), copy(cache.tunable_buffer))
     plan.setter(ps_new, cache.valid_values)
     build_initializeprob, remake_kwargs = _split_build_initializeprob(kwargs, !haskey(kwargs, :u0))
     return _remake_with_cached_synced_initials!(cache;
@@ -989,11 +993,9 @@ end
 
 Run `f(updated_problem)` while holding `cache`'s mutation lock.
 
-This is the safe way to share an `UpdateCache` across tasks when the returned
-problem is consumed immediately. The ordinary `update!` API serializes cache
-mutation, but the returned `ODEProblem` may borrow mutable cache buffers after
-`update!` returns; another update on the same cache can therefore invalidate it.
-For persistent returned problems, use allocation-owning `update`.
+This is the safe way to share an `UpdateCache` across tasks. Returned problems
+own the buffers they retain, while the lock prevents concurrent callers from
+mutating the cache's scratch workspace during construction.
 """
 function _with_update_cache_values(f, cache::UpdateCache, raw_values; kwargs...)
     lock(cache.borrow_lock)
@@ -1064,7 +1066,7 @@ set, creating it on first use.
 The returned cache owns mutable parameter and `u0` work buffers, so it is keyed
 by thread as well as problem and keys. This is the shared hot-path primitive for
 simulation, population fitting, and target scoring loops that need
-`ConfigKit.update` semantics without per-proposal workspace allocation.
+`ConfigKit.update` semantics without rebuilding symbolic plans and setters.
 """
 function thread_update_cache(prob::SciMLBase.ODEProblem, raw_keys; strict::Bool=true)
     raw_tuple = Tuple(raw_keys)
@@ -1092,8 +1094,8 @@ end
     with_thread_update_cache(f, prob, keys, values; strict=true, kwargs...)
 
 Run `f(updated_problem)` using the current thread's reusable update cache.
-The callback is evaluated while the cache lock is held so the returned problem
-can safely borrow cache-owned buffers during an immediate solve.
+The callback is evaluated while the cache lock is held to serialize mutation
+of its scratch workspace. The returned problem owns the buffers it retains.
 """
 function with_thread_update_cache(f, prob::SciMLBase.ODEProblem,
                                   params::NamedTuple; strict::Bool=true, kwargs...)

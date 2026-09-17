@@ -1,4 +1,4 @@
-using BookKit
+using QSPKit.BookKit
 using Documenter
 
 makedocs(;

@@ -20,7 +20,7 @@ whole DAG from them — no hand-maintained diagram.
 ## Discovering the graph
 
 ```julia
-using BookKit
+using QSPKit.BookKit
 
 g = lineage_graph("~/Projects/Julia/svn-proj-pfz01501")
 ```

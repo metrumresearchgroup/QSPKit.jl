@@ -1,5 +1,5 @@
 # Test repeated dosing with ii and addl
-using InjecKit
+using QSPKit.InjecKit
 using DifferentialEquations
 using DataFrames
 using Test

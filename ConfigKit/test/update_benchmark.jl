@@ -106,7 +106,7 @@ println("\n")
 # 6) ConfigKit.update (full pipeline with key resolution)
 # =====================================================================
 println("6) ConfigKit.update (full pipeline: key resolution + units + setp + remake)")
-using ConfigKit
+using QSPKit.ConfigKit
 pairs_sym = [α => new_α, β => new_β, γ => new_γ, δ => new_δ]
 b6 = @benchmark ConfigKit.update($prob, $pairs_sym; validate_units=false, convert_units=false)
 display(b6)

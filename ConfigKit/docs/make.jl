@@ -1,4 +1,4 @@
-using ConfigKit
+using QSPKit.ConfigKit
 using Documenter
 
 makedocs(;

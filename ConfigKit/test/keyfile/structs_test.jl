@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 
 @testset "Struct Utilities" begin
     @testset "_scientific_string formatting" begin

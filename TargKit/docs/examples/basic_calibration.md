@@ -9,7 +9,7 @@ We have a simple two-compartment model with three observable biomarkers. We want
 ## Step 1: Define Targets
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 targets = @targetset :biomarkers begin
     # Default predict: look up the target name in the simulation context
@@ -144,7 +144,7 @@ println("Refined loss: $(result2.loss)")
 ## Complete Script
 
 ```julia
-using TargKit
+using QSPKit.TargKit
 
 # --- Targets ---
 targets = @targetset :biomarkers begin

@@ -18,7 +18,7 @@ Edit only the manual section unless you are changing the generator or `tools/age
 
 ## Acceptance
 
-- `julia --project=ConfigKit/test --startup-file=no -e 'include("ConfigKit/test/runtests.jl")'`
+- `JULIA_LOAD_PATH=.:validation:@stdlib julia --project=. --startup-file=no -e 'using QSPKit; include("ConfigKit/test/runtests.jl")'`
 <!-- END GENERATED: agent-context -->
 
 <!-- BEGIN MANUAL: agent-guidance -->

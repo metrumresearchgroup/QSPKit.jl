@@ -17,7 +17,7 @@ Pkg.develop(path="path/to/QSPKit/BookKit")
 When you have a result you're satisfied with, call `book!()` to record it:
 
 ```julia
-using BookKit
+using QSPKit.BookKit
 
 result = book!("MU2", :accepted;
     result = fit_result,
@@ -91,7 +91,7 @@ This writes each attributed file to its original relative path under the target 
 ## Typical Project Workflow
 
 ```julia
-using BookKit
+using QSPKit.BookKit
 
 # --- Phase 1: Fit a PK model ---
 # (run your fitting code here)

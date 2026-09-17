@@ -1,4 +1,4 @@
-using StoreKit
+using QSPKit.StoreKit
 using Test
 
 # ═══ File Tracking Tests ═══

@@ -5,7 +5,7 @@ ShowKit wraps MetrumRG's [mrggsave](https://github.com/metrumresearchgroup/mrggs
 ## Basic Usage
 
 ```julia
-using ShowKit
+using QSPKit.ShowKit
 
 p = ggplot(df, aes(x=:TIME, y=:DV)) + geom_point() + theme_bw()
 
@@ -86,7 +86,7 @@ This creates six files:
 ## Complete Workflow Example
 
 ```julia
-using ShowKit, DataFrames, CSV
+using QSPKit.ShowKit, DataFrames, CSV
 
 # Load data
 df = CSV.read("data/derived/pk-data.csv", DataFrame)

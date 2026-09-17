@@ -1,5 +1,5 @@
 using Test
-using ConfigKit
+using QSPKit.ConfigKit
 import DynamicQuantities as DQ
 
 # FIXTURES_DIR is defined relative to this file's location

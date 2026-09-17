@@ -1,4 +1,4 @@
-using Test, InjecKit, ModelingToolkitBase, Sundials
+using Test, QSPKit.InjecKit, ModelingToolkitBase, Sundials
 
 @testset "Infusion boundaries restart multistep solvers" begin
     @independent_variables t

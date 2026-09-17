@@ -1,5 +1,5 @@
-using InjecKit
-using ConfigKit
+using QSPKit.InjecKit
+using QSPKit.ConfigKit
 using DifferentialEquations
 using DataFrames
 using Test

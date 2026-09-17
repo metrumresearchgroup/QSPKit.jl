@@ -14,8 +14,8 @@
 ## Quick Start
 
 ```julia
-using SimKit, DifferentialEquations
-using InjecKit: ev
+using QSPKit.SimKit, DifferentialEquations
+using QSPKit.InjecKit: ev
 
 # Build a SimContext from an ODEProblem
 sim = SimContext(prob; solver=CVODE_BDF(), reltol=1e-4)

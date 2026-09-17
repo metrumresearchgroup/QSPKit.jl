@@ -1,4 +1,4 @@
-using ShowKit
+using QSPKit.ShowKit
 using Documenter
 
 makedocs(;

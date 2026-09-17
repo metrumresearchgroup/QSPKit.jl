@@ -12,13 +12,13 @@ Edit only the manual section unless you are changing the generator or `tools/age
 - Purpose: Composable simulation pipelines over configured problems, dosing, subjects, and target workflows.
 - Local dependencies: `ConfigKit`, `InjecKit`
 - Adjacent packages to inspect for shared behavior: `BayesKit`, `ConfigKit`, `InjecKit`, `PopCore`, `PopKit`, `TargKit`
-- Files: 11 source, 1 test, 9 docs
+- Files: 14 source, 3 test, 9 docs
 - README: `SimKit/README.md`
 - Docs directory: `SimKit/docs`
 
 ## Acceptance
 
-- `julia --project=SimKit/test --startup-file=no -e 'include("SimKit/test/runtests.jl")'`
+- `JULIA_LOAD_PATH=.:validation:@stdlib julia --project=. --startup-file=no -e 'using QSPKit; include("SimKit/test/runtests.jl")'`
 <!-- END GENERATED: agent-context -->
 
 <!-- BEGIN MANUAL: agent-guidance -->

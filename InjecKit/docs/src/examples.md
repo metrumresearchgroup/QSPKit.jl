@@ -7,7 +7,7 @@ This page provides complete, runnable examples demonstrating various InjecKit.jl
 A basic one-compartment model with first-order elimination.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Define the model
 @parameters k V
@@ -43,7 +43,7 @@ plot(sol, idxs=C, xlabel="Time (hours)", ylabel="Concentration (mg/L)",
 A more complex model with absorption from a depot compartment.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Define two-compartment model with absorption
 @parameters ka k12 k21 k10 V1 V2
@@ -87,7 +87,7 @@ plot(sol, idxs=[central, peripheral],
 Demonstrating various infusion types using the continuous infusion functionality.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Simple one-compartment model for infusion
 @parameters k V
@@ -148,7 +148,7 @@ end
 Modeling time-varying parameters due to physiological changes.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Model with clearance that can change
 @parameters CL V
@@ -185,7 +185,7 @@ vline!([12.0, 24.0], linestyle=:dash, alpha=0.7, label="CL Changes")
 Two drugs where one affects the clearance of the other.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Two-drug interaction model
 @parameters ka1 ka2 CL1 CL2 V1 V2 KI
@@ -233,7 +233,7 @@ vline!([12.0], linestyle=:dash, alpha=0.7, label="Drug 2 starts")
 Preparing for population pharmacokinetic analysis.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 using Random, Distributions
 
 # Simple PK model for population simulation
@@ -318,7 +318,7 @@ println(describe(params_df))
 Demonstrating convenient repeated dosing schedules similar to NONMEM/mrgsolve.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations, Plots
 
 # Simple PK model
 @independent_variables t
@@ -473,7 +473,7 @@ end
 Real-world intensive care dosing with multiple infusion lines.
 
 ```julia
-using InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
+using QSPKit.InjecKit, ModelingToolkit, DataFrames, DifferentialEquations
 
 # Two-compartment model for ICU drug
 @parameters CL Q V1 V2  

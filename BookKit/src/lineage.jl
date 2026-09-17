@@ -663,7 +663,7 @@ Convert a [`LineageGraph`] into a `MetaGraphsNext.MetaGraph` (or
 properties. Requires a Graphs.jl metagraph package to be loaded:
 
 ```julia
-using BookKit, MetaGraphs       # or: using MetaGraphsNext
+using QSPKit.BookKit, MetaGraphs       # or: using MetaGraphsNext
 mg = to_metagraph(lineage_graph(project))
 ```
 

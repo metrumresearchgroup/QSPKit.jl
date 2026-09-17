@@ -11,8 +11,8 @@ module SimKit
 
 import SciMLBase
 import OrdinaryDiffEq
-import ConfigKit
-import InjecKit
+import ..ConfigKit
+import ..InjecKit
 using LRUCache
 
 # Core types

@@ -1,5 +1,5 @@
 using Test
-using QSPKitIO
+using QSPKit.QSPKitIO
 
 Base.@kwdef struct _TinyOptions
     a::Int = 1
