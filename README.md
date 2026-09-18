@@ -6,7 +6,7 @@ submodules; they are not independently versioned packages.
 
 ## Install
 
-QSPKit requires Julia 1.12 or later. Install the validated `v0.1.0` release
+QSPKit requires Julia 1.13 or later. Install the validated `v0.1.0` release
 directly from the public repository:
 
 ```julia

@@ -31,6 +31,14 @@ function _restore_runtime_box(::Type{_RuntimeBox}, env::AbstractDict, ctx)
     return _RuntimeBox(data, :rebuilt)
 end
 
+@testset "QSPKitIO unified module resolution" begin
+    storekit = getfield(parentmodule(QSPKitIO), :StoreKit)
+    @test !isdefined(@__MODULE__, :QSPKit)
+    @test !isdefined(@__MODULE__, :StoreKit)
+    @test QSPKitIO._resolve_type("QSPKit.StoreKit.SessionEntry") ===
+          storekit.SessionEntry
+end
+
 @testset "QSPKitIO archive roundtrip" begin
     spec = ArchiveSpec("TinyResult";
         archive_version = 1,

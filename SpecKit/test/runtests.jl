@@ -154,8 +154,22 @@ const FIXTURES = joinpath(@__DIR__, "fixtures")
     # Backend — r_available
     # ============================================================
     @testset "Backend — r_available" begin
-        # Should return a Bool regardless of R availability
-        @test r_available() isa Bool
+        condar = getfield(parentmodule(SpecKit), :CondaR)
+        @test !isdefined(@__MODULE__, :CondaR)
+        @test SpecKit._rcopy_fn[] === condar.rcopy
+        @test SpecKit._reval_fn[] === condar.reval
+
+        # Exercise the public status API without provisioning R in this unit test.
+        checked = SpecKit._YSPEC_CHECKED[]
+        available = SpecKit._YSPEC_AVAILABLE[]
+        try
+            SpecKit._YSPEC_CHECKED[] = true
+            SpecKit._YSPEC_AVAILABLE[] = false
+            @test r_available() === false
+        finally
+            SpecKit._YSPEC_CHECKED[] = checked
+            SpecKit._YSPEC_AVAILABLE[] = available
+        end
     end
 
 end

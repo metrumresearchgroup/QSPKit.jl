@@ -29,29 +29,16 @@ end
 """
     _check_rcall()
 
-Check if CondaR/RCall is loaded and functional. Called during __init__.
-Tries to find rcopy/reval in Main (from a user-loaded CondaR).
+Bind the unified package's CondaR backend. Called during `__init__`; the first
+actual R operation remains lazy and is performed by `r_available()`.
 """
 function _check_rcall()
     lock(_SPEC_R_LOCK) do
-        try
-            # Check if CondaR was loaded by the user before us
-            if isdefined(Main, :CondaR)
-                mod = getfield(Main, :CondaR)
-                if isdefined(mod, :rcopy) && isdefined(mod, :reval)
-                    _rcopy_fn[] = getfield(mod, :rcopy)
-                    _reval_fn[] = getfield(mod, :reval)
-                    # Test that R is actually callable
-                    _rcopy_fn[](Bool, _reval_fn[]("TRUE"))
-                    _RCALL_AVAILABLE[] = true
-                    return
-                end
-            end
-            _RCALL_AVAILABLE[] = false
-        catch
-            _RCALL_AVAILABLE[] = false
-        end
+        _rcopy_fn[] = CondaR.rcopy
+        _reval_fn[] = CondaR.reval
+        _RCALL_AVAILABLE[] = true
     end
+    return nothing
 end
 
 # Wrapper functions that delegate to the runtime-resolved functions

@@ -133,6 +133,16 @@ using Test
         @test StoreKit._is_traceable_file(sibling) == true
     end
 
+    @testset "source-less stdlib methods are not user code" begin
+        @test all(!StoreKit._is_traceable_method(m) for m in methods(+).ms if m.module === Base)
+        source_less = [
+            m for m in methods(+).ms
+            if string(m.file) == "none" || startswith(string(m.file), ":")
+        ]
+        @test !isempty(source_less)
+        @test all(!StoreKit._is_traceable_method(m) for m in source_less)
+    end
+
     @testset "source_fingerprint (per-method Route 2)" begin
         # A "helpers file": used `sfbar`, UNUSED `sfbaz`, and a driver calling sfbar.
         @eval module _SFTest

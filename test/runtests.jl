@@ -19,6 +19,8 @@ using QSPKit
     @test :book! in names(QSPKit.BookKit)
 end
 
+include("namespace_audit.jl")
+
 const COMPONENT_TEST_SUITES = [
     "QSPKitCore",
     "ConfigKit",
@@ -38,9 +40,11 @@ const COMPONENT_TEST_SUITES = [
     for component in COMPONENT_TEST_SUITES
         @testset "$component" begin
             suite_name = Symbol(component, "Tests")
-            Core.eval(Main, :(module $suite_name end))
-            suite = getfield(Main, suite_name)
-            Base.include(suite, joinpath(@__DIR__, "..", component, "test", "runtests.jl"))
+            suite_path = joinpath(@__DIR__, "..", component, "test", "runtests.jl")
+            body = quote
+                Base.include(@__MODULE__, $suite_path)
+            end
+            Core.eval(Main, Expr(:module, true, suite_name, body))
         end
     end
 end

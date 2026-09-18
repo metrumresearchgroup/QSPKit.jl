@@ -292,11 +292,33 @@ end
 
 True if method `m` should be fingerprinted/recursed into. REPL/eval-defined
 methods (`m.file == "none"` or a `:`-sentinel) have no on-disk anchor but their
-AST is still fingerprintable, so they are traced.
+AST is still fingerprintable, so they are traced when their defining module is
+`Main` or nested beneath it. Source-less methods owned by Base, stdlibs, and
+packages are generated implementation details rather than user code.
 """
+function _is_main_module(mod::Module)
+    while true
+        mod === Main && return true
+        parent = parentmodule(mod)
+        parent === mod && return false
+        mod = parent
+    end
+end
+
 function _is_traceable_method(m::Method)
+    root = Base.moduleroot(m.module)
+    (root === Base || root === Core) && return false
+
     f = string(m.file)
-    (f == "none" || startswith(f, ":")) && return true
+    (f == "none" || startswith(f, ":")) && return _is_main_module(m.module)
+    if !isabspath(f)
+        root_path = try
+            pathof(root)
+        catch
+            nothing
+        end
+        root_path === nothing || (f = normpath(joinpath(dirname(root_path), f)))
+    end
     return _is_traceable_file(f)
 end
 

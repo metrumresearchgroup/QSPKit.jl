@@ -190,6 +190,21 @@ end
         @test StoreKit._CURRENT_EXPR_ID[] == 0
     end
 
+    @testset "REPL transform does not require a Main.StoreKit binding" begin
+        StoreKit.clear_session_log!()
+        sandbox = Module(:StoreKitTransformSandbox)
+        transformed = StoreKit._recording_transform(:(global answer = 42))
+
+        Core.eval(sandbox, transformed)
+
+        @test Core.eval(sandbox, :answer) == 42
+        @test !isdefined(sandbox, :StoreKit)
+        @test !isdefined(sandbox, :QSPKit)
+        @test length(StoreKit.SESSION_LOG) == 1
+        @test only(StoreKit.SESSION_LOG).defs == Set([:answer])
+        StoreKit.clear_session_log!()
+    end
+
     @testset "get_session_log returns copy" begin
         StoreKit.clear_session_log!()
         push!(StoreKit.SESSION_LOG, StoreKit.SessionEntry(1, Set([:x]), Set([:y])))

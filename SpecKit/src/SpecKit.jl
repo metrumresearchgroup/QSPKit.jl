@@ -10,6 +10,7 @@ module SpecKit
 
 using OrderedCollections: OrderedDict
 using YAML
+using ..CondaR
 
 include("types.jl")
 include("native_parser.jl")

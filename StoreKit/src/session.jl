@@ -74,13 +74,15 @@ function _recording_transform(ex)
 
     defs = node.definitions
     refs = node.references
+    begin_expr = GlobalRef(@__MODULE__, :_begin_expr!)
+    finish_expr = GlobalRef(@__MODULE__, :_finish_expr!)
 
     return quote
-        local _storekit_eid = StoreKit._begin_expr!()
+        local _storekit_eid = $begin_expr()
         try
             $ex
         finally
-            StoreKit._finish_expr!(_storekit_eid, $(defs), $(refs))
+            $finish_expr(_storekit_eid, $(defs), $(refs))
         end
     end
 end
