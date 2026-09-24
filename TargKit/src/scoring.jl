@@ -135,8 +135,9 @@ Score one or more `df => predict_fn` pairs against a provided context.
 function score(pairs::Pair{<:AbstractDataFrame, <:Function}...; ctx, loss::Union{Symbol, Function}=:log)
     all_rows = NamedTuple[]
     for (df, predict_fn) in pairs
-        for row in eachrow(df)
-            predicted = predict_fn(ctx, row)
+        batch = _batch_predictions(predict_fn, ctx, df)
+        for (i, row) in enumerate(eachrow(df))
+            predicted = batch === nothing ? predict_fn(ctx, row) : batch[i]
             lt = _resolve_loss_type(row, loss)
             w = _resolve_weight(row)
 
@@ -183,6 +184,10 @@ end
 
 Score one or more TargetSets against simulation results.
 
+# Matching (`match` / `at`)
+TargetSets built with `match`/`at` are matched against `sim` row by row; see
+`TargKit/docs/matching.md`.
+
 # Convention-based extraction
 If the TargetSet has `:condition` and `:variable` columns, predictions are
 auto-extracted as `sim[condition][variable]` for endpoint values. If the target
@@ -202,9 +207,14 @@ function score(targets_in::TargetSet...; sim, predict=nothing)
 
     for ts in targets_in
         default_loss = ts.loss
+        !isnothing(ts.match) && !isnothing(predict) && throw(ArgumentError(
+            "score: pass either `predict` or a TargetSet with `match`/`at`, not both"))
+        batch = isnothing(ts.match) ? nothing : _match_predictions(sim, ts.df, ts.match)
 
-        for row in eachrow(ts.df)
-            predicted = if !isnothing(predict)
+        for (i, row) in enumerate(eachrow(ts.df))
+            predicted = if !isnothing(batch)
+                batch[i]
+            elseif !isnothing(predict)
                 predict(sim, row)
             else
                 _convention_predict(sim, row)

@@ -26,6 +26,7 @@ include(joinpath(@__DIR__, "..", "BookKit", "src", "BookKit.jl"))
 # package. Optional third-party integrations remain package extensions.
 include(joinpath(@__DIR__, "..", "BookKit", "ext", "BookKitTargKitExt.jl"))
 include(joinpath(@__DIR__, "..", "BookKit", "ext", "BookKitSimKitExt.jl"))
+include(joinpath(@__DIR__, "..", "TargKit", "ext", "TargKitSimKitExt.jl"))
 
 # Root API: intentionally small, cohesive, and collision-resistant.
 using .ConfigKit: load_keyfile, ParameterSet, value, get_values, get_bounds,

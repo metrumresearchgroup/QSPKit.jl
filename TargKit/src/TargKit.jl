@@ -21,6 +21,7 @@ import Tables
 import ..ConfigKit
 import ..QSPKitCore
 import SymbolicIndexingInterface
+import SciMLBase
 
 # ============================================================
 # Include source files
@@ -40,6 +41,7 @@ include("targetspec/filtering.jl")
 
 # Scoring, optimization, display
 include("scoring.jl")
+include("matching.jl")
 include("objective.jl")
 include("pipeline_types.jl")
 include("fit.jl")         # imports Optimization, OptimizationOptimJL (ParticleSwarm, NelderMead, etc.)

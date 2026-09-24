@@ -27,5 +27,5 @@ function filter_flags(ts::TargetSet, flag::Symbol)
         false
     end
 
-    TargetSet(ts.df[mask, :], ts.loss, ts.metadata)
+    TargetSet(ts.df[mask, :], ts.loss, ts.metadata, ts.match)
 end

@@ -18,6 +18,43 @@ report = score(observed => predict; ctx=simulation)
 `report.details` contains each prediction, observed value, loss, and range
 result. `report.total_loss` is the sum across targets.
 
+## Match targets to simulation output
+
+A `TargetSet` built with `match` and `at` is compared with the simulation output
+the way a join matches rows:
+
+- `match` names the target column(s) that pick a simulation: dose, donor, arm.
+- `at` picks the point within it along one ordered axis: `:TIME` (a target
+  column), `:TIME_hr => :TIME` (a target column matched to a differently named
+  axis), or `:TIME => 672.0` (every target at one point). The axis does not have
+  to be time; `at = :dose` reads a dose-response table.
+- The observed column's name is the simulated variable it is compared with.
+  `value = :obs => :simvar` names it explicitly, and a `variable` column gives
+  one per row.
+
+```julia
+exposure = TargetSet(target_df; match = :dose, value = :Conc, at = :TIME => 24.0)
+
+sim(p) = scan(SimContext(prob) |> with(p), :dose => unique(target_df.dose);
+              events = q -> ev(time = 0.0, cmt = :Depot, amt = q.dose),
+              duration = 24.0)
+
+result = fit(exposure; simulate = sim, params = [:CL, :V], keyfile = kf)
+```
+
+`simulate` may return a DataFrame (or any table), an ODE solution, a SimKit scan
+result or `SimContext`, or a Dict keyed by one match value. Each target row must
+match exactly one simulation point. Anything else raises a `TargKit.MatchError`
+that names the target and lists what the output contains; `setup` evaluates the
+objective once, so this happens before optimization starts.
+
+There is no interpolation between saved points. Save the simulation at the
+target points, or leave out `saveat` so solutions are evaluated with the
+solver's dense output. A target at a dose time is ambiguous (the solution holds
+the values before and after the dose) and is an error.
+
+The `condition` and `timepoint` keywords are deprecated; use `match` and `at`.
+
 ## Build an objective
 
 ```julia

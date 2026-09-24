@@ -1,58 +1,31 @@
 # TargKit Integration
 
-SimKit scan results can be converted directly into condition-keyed simulation
-outputs for TargKit:
+TargKit matches targets against SimKit results directly. A scan result is
+labelled by its scanned values, and a `SimContext` contributes its last phase's
+solution (the same phase `to_dataframe` reports):
 
 ```julia
-simulate_pk(overrides; times=obs_times) =
-    result(scan(base_sim, :dose => dose_levels) do ctx, p
-        ctx |>
-            with(overrides) |>
-            events(regimen(p[:dose])) |>
-            simulate(t_end; name=:pk, saveat=times)
-    end)
-```
+simulate_pk(overrides) =
+    scan(SimContext(prob) |> with(overrides), :dose => dose_levels;
+         events = p -> regimen(p.dose), duration = t_end)
 
-For curve targets, store each target value as `(t=..., y=...)` and let TargKit
-evaluate the returned ODE solutions by convention:
-
-```julia
-targets_pk = TargetSet(curve_targets;
-    condition = :dose,
-    variable = :organ => endpoint_vars,
+targets_pk = TargetSet(obs_df;      # columns: dose, TIME, Conc
+    match = :dose,                  # picks the scan result
+    value = :Conc,                  # observed column = simulated variable
+    at    = :TIME,                  # evaluates that result's solution at TIME
 )
 
-obj = objective(targets_pk;
-    simulate = simulate_pk,
-    params = param_names,
-    bounds = bounds,
-)
+result = fit(targets_pk; simulate = simulate_pk, params = param_names, bounds = bounds)
 ```
 
-When `sim[condition]` is solution-like, TargKit evaluates series targets as:
+The same targets also match `to_dataframe(scan(...))`, `result(scan(...))`, or a
+single `SimContext`. Each target must match exactly one simulation point: a
+dose missing from the scan, a scanned parameter the targets do not match on, or
+a target at a dose time raises a `TargKit.MatchError` explaining which.
 
-```julia
-sim[condition](target.value.t; idxs=target.variable)
-```
-
-This keeps ODE solution indexing out of model scripts while preserving the
-generic `predict=(sim, row) -> ...` escape hatch for nonstandard mappings.
-
-## Naming Convention
-
-Condition values in a `TargetSet` should match the keys returned by SimKit
-simulation output:
-
-```julia
-# TargetSet has condition = :mepolizumab
-drug_response = TargetSet(df; condition = :treatment => Dict("Anti-IL5" => :mepolizumab))
-
-# SimKit branch uses the same name
-arms = branch(baseline, :mepolizumab => with(mepo_params) >> events(mepo_events) >> simulate(400.0))
-
-# score() auto-connects them
-report = score(drug_response; sim=merge(result(base), result(arms)))
-```
+Solutions saved with `saveat` have no dense output, so their targets must sit
+at saved times; leave out `saveat` to evaluate targets anywhere in the solved
+span.
 
 ## Target Filtering
 

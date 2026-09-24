@@ -23,7 +23,7 @@ function where(ts::TargetSet, pair::Pair)
     else
         [row[col] == val for row in eachrow(ts.df)]
     end
-    TargetSet(ts.df[mask, :], ts.loss, ts.metadata)
+    TargetSet(ts.df[mask, :], ts.loss, ts.metadata, ts.match)
 end
 
 """

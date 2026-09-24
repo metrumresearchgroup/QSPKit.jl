@@ -984,3 +984,6 @@ end
     end
 
 end
+
+include("matching_test.jl")
+include("matching_simkit_test.jl")

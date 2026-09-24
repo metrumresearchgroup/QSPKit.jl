@@ -105,7 +105,7 @@ function _evaluate_objective(x::AbstractVector, obj::ObjectiveFunction)
     # Call simulate. Exceptions propagate; explicit `nothing` remains the
     # signal for callers that intentionally want the configured failure penalty.
     ctx = obj.simulate(overrides)
-    if isnothing(ctx)
+    if isnothing(ctx) || _failed_matched_simulation(obj, ctx)
         _fire_on_eval(obj, obj.failure_penalty, x)
         return obj.failure_penalty
     end
@@ -120,11 +120,16 @@ function _evaluate_objective(x::AbstractVector, obj::ObjectiveFunction)
     return total
 end
 
+# A failed ODE solve inside matched output gets failure_penalty, like `nothing`.
+_failed_matched_simulation(obj::ObjectiveFunction, ctx) =
+    any(p -> last(p) isa MatchPredictor, obj.target_pairs) && _has_failed_solution(_normalize_source(ctx))
+
 function _evaluate_pair_objective_loss(ctx, obj::ObjectiveFunction)
     total = 0.0
     for (df, predict_fn) in obj.target_pairs
-        for row in eachrow(df)
-            predicted = predict_fn(ctx, row)
+        batch = _batch_predictions(predict_fn, ctx, df)
+        for (i, row) in enumerate(eachrow(df))
+            predicted = batch === nothing ? predict_fn(ctx, row) : batch[i]
             lt = _resolve_loss_type(row, obj.default_loss)
             w = _resolve_weight(row)
 
@@ -266,8 +271,14 @@ function objective(
     # Use the loss from the first TargetSet if not explicitly provided.
     effective_loss = isnothing(loss) ? (isempty(targets_in) ? :log : first(targets_in).loss) : loss
 
-    pairs = [Pair{DataFrame, Function}(DataFrame(ts.df), predict_fn) for ts in targets_in]
-    prepared_targets = isnothing(predict) ? _prepare_convention_targets(targets_in, effective_loss) : nothing
+    has_match = any(ts -> !isnothing(ts.match), targets_in)
+    has_match && !isnothing(predict) && throw(ArgumentError(
+        "objective: pass either `predict` or TargetSets with `match`/`at`, not both"))
+
+    pairs = [Pair{DataFrame, Function}(DataFrame(ts.df), isnothing(ts.match) ? predict_fn : MatchPredictor(ts.match))
+             for ts in targets_in]
+    prepared_targets = isnothing(predict) && !has_match ?
+        _prepare_convention_targets(targets_in, effective_loss) : nothing
 
     return objective_from_pairs(
         pairs;
