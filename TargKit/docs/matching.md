@@ -52,7 +52,7 @@ res = fit(ts; simulate = sim, params, keyfile)
 | `variable` | existing forms | With `match`/`at`: a target column of simulated variable names (long data with several endpoints). Overrides the default. |
 
 `match` and `at` are each optional; either one switches the TargetSet to
-matching. Neither can be combined with `condition` or `timepoint`.
+matching.
 `match`/`at` columns keep their names in the TargetSet, so `where(ts, :dose => 10)`
 works. Target names are generated from the match and `at` columns, e.g.
 `:"dose=10.0,TIME=24.0"`.
@@ -128,6 +128,8 @@ on the other.
 - Passing `predict` together with a matching TargetSet is an `ArgumentError`.
 - `predict = (sim, row) -> ...` remains the escape hatch for TargetSets without
   `match`/`at`.
+- A TargetSet with neither `match`/`at` nor `predict` is an `ArgumentError`:
+  there is no implicit lookup.
 
 ### Other changes
 
@@ -136,11 +138,13 @@ on the other.
 - A role that renames a column onto an existing column of the role's name
   (e.g. `value = :obs` while the data also has `:value`) is an error.
 
-### Deprecations
+### Removed
 
-`condition` and `timepoint` keep working through the existing convention
-lookup, which is unchanged, and emit a deprecation warning. Use `match` and
-`at` instead.
+The `condition` and `timepoint` keywords and the implicit lookup
+(`sim[condition][variable]`, `sim[variable]`, `sim[target name]`, and
+series-valued targets keyed by condition) are removed. Passing `condition` or
+`timepoint` to `TargetSet` is an unsupported-keyword `MethodError`. Targets
+keyed by name, or series-valued targets, use `predict`.
 
 ## Out of scope
 

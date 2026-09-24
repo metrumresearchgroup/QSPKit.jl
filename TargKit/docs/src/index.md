@@ -15,15 +15,15 @@ TargKit does not own an ODE model or solver runtime.
 
 Every target table has `name` and `value` columns. Optional `lower`, `upper`,
 `weight`, and `loss` columns control range checks and scoring. `TargetSet`
-also understands role columns such as `condition`, `variable`, and
-`timepoint`, including wide-to-long conversion.
+also understands a `variable` role column and wide-to-long conversion. It is
+mapped to simulation output with `match`/`at` or a `predict` function.
 
 Built-in losses are `:log`, `:squared`, `:series_log`, `:series_mse`, and
 `:range_only`. A loss may instead be a function of `(predicted, observed,
 weight)`.
 
 Scoring is strict: non-finite values, nonpositive log inputs, malformed series,
-missing convention lookup sources, and missing bounds required by
+and missing bounds required by
 `:range_only` raise descriptive errors with target and series-index context.
 They are never converted to ordinary target-loss penalties.
 

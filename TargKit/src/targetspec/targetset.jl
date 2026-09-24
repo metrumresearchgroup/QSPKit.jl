@@ -7,15 +7,17 @@
 
 Construct a TargetSet from a DataFrame with column role declarations.
 
+A TargetSet is compared with simulation output either through `match`/`at`
+(below) or through a `predict = (sim, row) -> value` function passed to
+`score`/`objective`/`fit`. One of the two is required.
+
 # Column Roles (keyword arguments)
 - `value` — observed values column (default: `:value`). `:obs => :simvar`
   names the simulated variable it is compared with.
 - `lower` — range lower bound column (default: `:lower`)
 - `upper` — range upper bound column (default: `:upper`)
-- `variable` — solution variable name column
+- `variable` — column of simulated variable names, one per row
 - `weight` — observation weights column
-- `condition` — deprecated; use `match`
-- `timepoint` — deprecated; use `at`
 
 # Matching simulation output
 - `match` — target column(s) holding discrete keys matched against the
@@ -44,12 +46,12 @@ name. See `TargKit/docs/matching.md`.
 pct_to_ratio(x) = 1.0 + x / 100.0
 
 ts = TargetSet(df;
-    value     = :mean_pct_change => pct_to_ratio,
-    lower     = :error_lower => pct_to_ratio,
-    upper     = :error_upper => pct_to_ratio,
-    condition = :treatment => Dict("Anti-IL5" => :mepolizumab),
-    variable  = :outcome_measure => Dict("Blood_Eos" => :Blood_Eos),
-    loss = :log,
+    match    = :treatment,
+    value    = :mean_pct_change => pct_to_ratio,
+    lower    = :error_lower => pct_to_ratio,
+    upper    = :error_upper => pct_to_ratio,
+    variable = :outcome_measure => Dict("Blood_Eos" => :Blood_Eos),
+    loss     = :log,
 )
 
 # Concentration 24 h after each dose level
@@ -60,9 +62,7 @@ function TargetSet(df::DataFrame;
     value     = :value,
     lower     = :lower,
     upper     = :upper,
-    condition = nothing,
     variable  = nothing,
-    timepoint = nothing,
     weight    = nothing,
     match     = nothing,
     at        = nothing,
@@ -71,33 +71,19 @@ function TargetSet(df::DataFrame;
     metadata  = nothing,
 )
     matching = !isnothing(match) || !isnothing(at)
-    if matching
-        isnothing(condition) || throw(ArgumentError(
-            "TargetSet: `condition` cannot be combined with `match`/`at`; list the column in `match` instead"))
-        isnothing(timepoint) || throw(ArgumentError(
-            "TargetSet: `timepoint` cannot be combined with `match`/`at`; use `at` instead"))
-    else
-        isnothing(condition) || Base.depwarn(
-            "TargetSet(...; condition) is deprecated; use `match` instead.", :TargetSet)
-        isnothing(timepoint) || Base.depwarn(
-            "TargetSet(...; timepoint) is deprecated; use `at` instead.", :TargetSet)
-    end
-
     value, value_variable = _split_value_variable(value)
     result = copy(df)
 
     # Handle wide format pivot first
     if !isnothing(targets)
-        result = _pivot_wide_to_long(result, targets, timepoint)
+        result = _pivot_wide_to_long(result, targets)
     end
 
     # Process column role declarations with Pair syntax
     result = _process_role!(result, :value, value)
     result = _process_role!(result, :lower, lower)
     result = _process_role!(result, :upper, upper)
-    result = _process_role!(result, :condition, condition)
     result = _process_role!(result, :variable, variable)
-    result = _process_role!(result, :timepoint, timepoint)
     result = _process_role!(result, :weight, weight)
 
     # Ensure :value exists
@@ -113,7 +99,7 @@ function TargetSet(df::DataFrame;
 
     spec = matching ? _match_spec(result, match, at, value, value_variable) : nothing
 
-    # Auto-generate :name from :condition + :variable if not present
+    # Auto-generate :name if not present
     if :name ∉ propertynames(result)
         isnothing(spec) ? _auto_generate_name!(result) : _auto_generate_match_names!(result, spec)
     else
@@ -276,7 +262,7 @@ end
 # ============================================================
 
 """Pivot wide format columns into long format with :variable and :value."""
-function _pivot_wide_to_long(df::DataFrame, target_cols::Vector{Symbol}, _timepoint)
+function _pivot_wide_to_long(df::DataFrame, target_cols::Vector{Symbol})
     rows = NamedTuple[]
     other_cols = [c for c in Symbol.(names(df)) if c ∉ target_cols]
 
@@ -295,24 +281,10 @@ end
 # Internal: Auto-generate :name
 # ============================================================
 
-"""Auto-generate :name from :condition + :variable + :timepoint columns."""
+"""Auto-generate :name for a TargetSet without `match`/`at`: its variable, or `target_<i>`."""
 function _auto_generate_name!(df::DataFrame)
-    dim_cols = Symbol[]
-    for col in (:condition, :variable, :timepoint)
-        col in propertynames(df) && push!(dim_cols, col)
-    end
-
-    if isempty(dim_cols)
-        # Fall back: use :value index
-        if :value in propertynames(df)
-            df[!, :name] = [Symbol("target_$i") for i in 1:nrow(df)]
-        else
-            error("Cannot auto-generate :name — no :condition, :variable, or :timepoint columns")
-        end
-    else
-        df[!, :name] = map(eachrow(df)) do row
-            parts = [string(getproperty(row, c)) for c in dim_cols]
-            Symbol(join(parts, "_"))
-        end
-    end
+    df[!, :name] = :variable in propertynames(df) ?
+        [Symbol(string(v)) for v in df.variable] :
+        [Symbol("target_$i") for i in 1:nrow(df)]
+    return df
 end

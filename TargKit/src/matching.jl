@@ -117,6 +117,23 @@ end
 
 (p::MatchPredictor)(sim, row) = _resolve(_normalize_source(sim), _match_query(row, p.spec))
 
+"""
+The predictor for a TargetSet: its `match`/`at` spec, or the caller's `predict`.
+A TargetSet needs exactly one of the two; there is no implicit lookup.
+"""
+function _target_predictor(ts::TargetSet, predict, caller::AbstractString)
+    if !isnothing(ts.match)
+        isnothing(predict) || throw(ArgumentError(
+            "$caller: pass either `predict` or TargetSets built with `match`/`at`, not both"))
+        return MatchPredictor(ts.match)
+    end
+    isnothing(predict) && throw(ArgumentError(
+        "$caller: the TargetSet does not say how its rows map to the simulation output. " *
+        "Build it with `match`/`at`, e.g. `TargetSet(df; match = :dose, value = :obs => :simvar, " *
+        "at = :TIME => 24.0)`, or pass `predict = (sim, row) -> value`."))
+    return predict
+end
+
 """Predictions for all rows: batched for `MatchPredictor`, otherwise `nothing` (call per row)."""
 _batch_predictions(predict_fn::MatchPredictor, sim, df) = _match_predictions(sim, df, predict_fn.spec)
 _batch_predictions(predict_fn, sim, df) = nothing

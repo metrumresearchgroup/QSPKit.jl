@@ -12,7 +12,7 @@ Supports scalar or vector matching:
 
 # Examples
 ```julia
-where(ts, :condition => :mepolizumab)
+where(ts, :arm => :mepolizumab)
 where(ts, :variable => [:Blood_Eos, :FeNO])
 ```
 """
@@ -29,6 +29,6 @@ end
 """
     where(pair::Pair) → Function
 
-Curried form for piping: `ts |> where(:condition => :mepolizumab)`.
+Curried form for piping: `ts |> where(:arm => :mepolizumab)`.
 """
 where(pair::Pair) = ts -> where(ts, pair)

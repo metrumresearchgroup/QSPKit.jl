@@ -49,7 +49,6 @@ function objective(
 
     return ObjectiveFunction(
         target_pairs,
-        nothing,
         simulate,
         params,
         bounds,
@@ -110,11 +109,7 @@ function _evaluate_objective(x::AbstractVector, obj::ObjectiveFunction)
         return obj.failure_penalty
     end
 
-    # Accumulate loss across all targets. TargetSet convention objectives use a
-    # prepared column-array plan; custom predictors keep the DataFrameRow path.
-    total = obj.prepared_targets === nothing ?
-        _evaluate_pair_objective_loss(ctx, obj) :
-        _evaluate_prepared_objective_loss(ctx, obj.prepared_targets, obj.default_loss)
+    total = _evaluate_pair_objective_loss(ctx, obj)
 
     _fire_on_eval(obj, total, x)
     return total
@@ -244,9 +239,9 @@ end
 
 Build a callable objective function from TargetSets.
 
-The `simulate` function receives parameter overrides and returns simulation results (Dict/NamedTuple).
-The optional `predict` function extracts predictions: `(sim_result, row) -> value`.
-Without `predict`, convention-based extraction is used.
+`simulate` receives parameter overrides and returns the simulation output. Each
+TargetSet maps its rows to that output with `match`/`at`, or through
+`predict = (sim, row) -> value`; one of the two is required.
 """
 function objective(
     targets_in::TargetSet...;
@@ -261,24 +256,11 @@ function objective(
     bounds_penalty::Union{Float64, Nothing} = nothing,
     parameter_scale::Symbol = :log,
 )
-    # Build df => predict_fn pairs from TargetSets
-    predict_fn = if !isnothing(predict)
-        predict
-    else
-        (sim, row) -> _convention_predict(sim, row)
-    end
-
     # Use the loss from the first TargetSet if not explicitly provided.
     effective_loss = isnothing(loss) ? (isempty(targets_in) ? :log : first(targets_in).loss) : loss
 
-    has_match = any(ts -> !isnothing(ts.match), targets_in)
-    has_match && !isnothing(predict) && throw(ArgumentError(
-        "objective: pass either `predict` or TargetSets with `match`/`at`, not both"))
-
-    pairs = [Pair{DataFrame, Function}(DataFrame(ts.df), isnothing(ts.match) ? predict_fn : MatchPredictor(ts.match))
+    pairs = [Pair{DataFrame, Function}(DataFrame(ts.df), _target_predictor(ts, predict, "objective"))
              for ts in targets_in]
-    prepared_targets = isnothing(predict) && !has_match ?
-        _prepare_convention_targets(targets_in, effective_loss) : nothing
 
     return objective_from_pairs(
         pairs;
@@ -291,7 +273,6 @@ function objective(
         print_every=print_every,
         bounds_penalty=bounds_penalty,
         parameter_scale=parameter_scale,
-        prepared_targets=prepared_targets,
     )
 end
 
@@ -301,7 +282,6 @@ function objective_from_pairs(
     simulate, params, bounds, loss, failure_penalty, on_eval, bounds_penalty,
     print_every=nothing,
     parameter_scale=:log,
-    prepared_targets=nothing,
 )
     length(bounds.lb) == length(params) || error("bounds.lb length must match params length")
     length(bounds.ub) == length(params) || error("bounds.ub length must match params length")
@@ -310,7 +290,6 @@ function objective_from_pairs(
 
     return ObjectiveFunction(
         pairs,
-        prepared_targets,
         simulate,
         params,
         bounds,
@@ -328,309 +307,4 @@ function objective_from_pairs(
         Ref(""),
         Ref(time()),
     )
-end
-
-# ============================================================
-# Prepared TargetSet convention objective
-# ============================================================
-
-function _prepare_convention_targets(targets_in, default_loss)
-    return PreparedConventionTargets[_prepare_convention_targets(ts, default_loss) for ts in targets_in]
-end
-
-function _prepare_convention_targets(ts::TargetSet, default_loss)
-    df = ts.df
-    n = nrow(df)
-    names = :name in propertynames(df) ? Symbol.(df[!, :name]) :
-        [Symbol(:target_, i) for i in 1:n]
-    values = Any[df[i, :value] for i in 1:n]
-    series_log_values = Any[_series_log_values(values[i]) for i in 1:n]
-    lowers = _float_column_or_default(df, :lower, NaN)
-    uppers = _float_column_or_default(df, :upper, NaN)
-    weights = _float_column_or_default(df, :weight, 1.0)
-    row_losses = _optional_column(df, :loss; missing_value=nothing)
-    row_losses === nothing && (row_losses = fill(nothing, n))
-    conditions = _optional_column(df, :condition)
-    variables = _optional_column(df, :variable)
-    timepoints = _optional_column(df, :timepoint)
-    series_plan = _prepare_series_plan(values, series_log_values, weights, row_losses,
-        conditions, variables, default_loss)
-
-    return PreparedConventionTargets(
-        names, values, series_log_values, lowers, uppers, weights, row_losses,
-        conditions, variables, timepoints, series_plan,
-    )
-end
-
-function _prepare_series_plan(values, series_log_values, weights, row_losses,
-                              conditions, variables, default_loss)
-    variables === nothing && return nothing
-    n = length(values)
-    times = Vector{Any}(undef, n)
-    observed = Vector{Any}(undef, n)
-    observed_logs = Vector{Any}(undef, n)
-    plan_variables = Vector{Any}(undef, n)
-    loss_types = Vector{Symbol}(undef, n)
-
-    for i in 1:n
-        value = values[i]
-        _is_series_value(value) || return nothing
-        ismissing(variables[i]) && return nothing
-        lt = _prepared_loss_type(value, row_losses[i], default_loss)
-        lt isa Symbol || return nothing
-        (lt == :series_log || lt == :series_mse) || return nothing
-        times[i] = value.t
-        observed[i] = value.y
-        observed_logs[i] = series_log_values[i]
-        plan_variables[i] = variables[i]
-        loss_types[i] = lt
-    end
-
-    return PreparedSeriesPlan(conditions, plan_variables, times, observed,
-        observed_logs, weights, loss_types)
-end
-
-function _series_log_values(value)
-    _is_series_value(value) || return nothing
-    y = value.y
-    logs = Vector{Float64}(undef, length(y))
-    @inbounds for i in eachindex(y)
-        logs[i] = log(y[i])
-    end
-    return logs
-end
-
-function _optional_column(df::DataFrame, col::Symbol; missing_value=missing)
-    col in propertynames(df) || return nothing
-    source = df[!, col]
-    return Any[ismissing(v) ? missing_value : v for v in source]
-end
-
-function _float_column_or_default(df::DataFrame, col::Symbol, default::Float64)
-    n = nrow(df)
-    out = Vector{Float64}(undef, n)
-    if col in propertynames(df)
-        source = df[!, col]
-        for i in 1:n
-            v = source[i]
-            out[i] = ismissing(v) ? default : Float64(v)
-        end
-    else
-        fill!(out, default)
-    end
-    return out
-end
-
-function _evaluate_prepared_objective_loss(ctx, prepared_targets, default_loss)
-    total = 0.0
-    for targets in prepared_targets
-        total += _evaluate_prepared_target_loss(ctx, targets, default_loss)
-    end
-    return total
-end
-
-function _evaluate_prepared_target_loss(ctx, targets::PreparedConventionTargets, default_loss)
-    targets.series_plan === nothing || return _evaluate_prepared_series_plan(ctx, targets.series_plan)
-
-    total = 0.0
-    for i in eachindex(targets.values)
-        total += _prepared_row_loss(ctx, targets, i, default_loss)
-    end
-    return total
-end
-
-function _evaluate_prepared_series_plan(sim, plan::PreparedSeriesPlan)
-    total = 0.0
-    for i in eachindex(plan.variables)
-        source = _prepared_series_source(sim, plan, i)
-        if source === nothing
-            total += plan.weights[i] * 1e6
-        elseif _is_prediction_array(source)
-            total += compute_loss(source, (t=plan.times[i], y=plan.observed[i]),
-                plan.loss_types[i], plan.weights[i])
-        else
-            total += _evaluate_solution_series_loss(
-                source,
-                plan.times[i],
-                plan.variables[i],
-                plan.observed[i],
-                plan.observed_logs[i],
-                plan.loss_types[i],
-                plan.weights[i],
-            )
-        end
-    end
-    return total
-end
-
-function _prepared_series_source(sim, plan::PreparedSeriesPlan, i::Int)
-    if plan.conditions !== nothing && !ismissing(plan.conditions[i])
-        cond_result = _safe_getindex(sim, plan.conditions[i])
-        cond_result === nothing && return nothing
-        if _is_mapping_result(cond_result)
-            val = _safe_getindex(cond_result, plan.variables[i])
-            val !== nothing && return val
-        end
-        return cond_result
-    end
-
-    if _is_mapping_result(sim)
-        val = _safe_getindex(sim, plan.variables[i])
-        val !== nothing && return val
-    end
-    return sim
-end
-
-function _prepared_row_loss(sim, targets::PreparedConventionTargets, i::Int, default_loss)
-    value = targets.values[i]
-    lt = _prepared_loss_type(value, targets.row_losses[i], default_loss)
-    w = targets.weights[i]
-
-    if lt == :range_only
-        lower = targets.lowers[i]
-        upper = targets.uppers[i]
-        return (isnan(lower) || isnan(upper)) ? w * 1e6 :
-            compute_loss_range_only(_prepared_prediction(sim, targets, i), lower, upper, w)
-    end
-
-    return _prepared_prediction_loss(sim, targets, i, value, lt, w)
-end
-
-function _prepared_loss_type(value, row_loss, default_loss)
-    row_loss !== nothing && row_loss !== missing && return row_loss
-    _is_series_value(value) && return :series_log
-    return default_loss
-end
-
-function _prepared_prediction_loss(sim, targets::PreparedConventionTargets,
-                                   i::Int, value, loss_type, weight::Float64)
-    source = _prepared_prediction_source(sim, targets, i)
-    source === nothing && return compute_loss(NaN, value, loss_type, weight)
-
-    if _is_series_value(value) && _is_prediction_array(source)
-        return compute_loss(source, value, loss_type, weight)
-    end
-
-    if _is_series_value(value) && !_is_mapping_result(source)
-        variable = _prepared_variable(targets, i)
-        variable === nothing && return compute_loss(NaN, value, loss_type, weight)
-        return _evaluate_solution_series_loss(source, value.t, variable, value.y,
-            targets.series_log_values[i], loss_type, weight)
-    end
-
-    predicted = _extract_prediction_from_source(source, targets, i, value)
-    return compute_loss(predicted, value, loss_type, weight)
-end
-
-function _prepared_prediction(sim, targets::PreparedConventionTargets, i::Int)
-    source = _prepared_prediction_source(sim, targets, i)
-    source === nothing && return NaN
-    return _extract_prediction_from_source(source, targets, i, targets.values[i])
-end
-
-function _prepared_prediction_source(sim, targets::PreparedConventionTargets, i::Int)
-    has_condition = _has_prepared_value(targets.conditions, i)
-    has_variable = _has_prepared_value(targets.variables, i)
-
-    if has_condition && has_variable
-        cond_result = _safe_getindex(sim, targets.conditions[i])
-        cond_result === nothing && return nothing
-        if _is_series_value(targets.values[i]) && !_is_mapping_result(cond_result)
-            return cond_result
-        end
-        if _has_prepared_value(targets.timepoints, i) && !_is_mapping_result(cond_result)
-            return cond_result
-        end
-        val = _safe_getindex(cond_result, targets.variables[i])
-        val !== nothing && return val
-        (_is_series_value(targets.values[i]) || _has_prepared_value(targets.timepoints, i)) &&
-            return cond_result
-        return nothing
-    elseif has_variable
-        if _is_series_value(targets.values[i]) && !_is_mapping_result(sim)
-            return sim
-        end
-        val = _safe_getindex(sim, targets.variables[i])
-        val !== nothing && return val
-        _is_series_value(targets.values[i]) && return sim
-        return nothing
-    elseif has_condition
-        return _safe_getindex(sim, targets.conditions[i])
-    else
-        return _safe_getindex(sim, targets.names[i])
-    end
-end
-
-function _extract_prediction_from_source(source, targets::PreparedConventionTargets,
-                                         i::Int, value)
-    if _is_series_value(value) && _is_prediction_array(source)
-        return source
-    end
-
-    if _is_series_value(value) && !_is_mapping_result(source)
-        variable = _prepared_variable(targets, i)
-        variable === nothing && return source
-        return _evaluate_solution(source, value.t, variable)
-    end
-
-    if _has_prepared_value(targets.timepoints, i) && !_is_mapping_result(source)
-        variable = _prepared_variable(targets, i)
-        variable === nothing && return NaN
-        return _evaluate_solution(source, targets.timepoints[i], variable)
-    end
-
-    _is_series_value(value) && return source
-    return _extract_scalar(source)
-end
-
-_has_prepared_value(values::Nothing, i::Int) = false
-_has_prepared_value(values, i::Int) = !ismissing(values[i])
-
-function _prepared_variable(targets::PreparedConventionTargets, i::Int)
-    _has_prepared_value(targets.variables, i) && return targets.variables[i]
-    return nothing
-end
-
-_is_prediction_array(value) = value isa AbstractArray && !hasproperty(value, :prob)
-
-function _evaluate_solution_series_loss(sol, times, variable, observed, observed_log,
-                                        loss_type, weight::Float64)
-    loss_type isa Function && return loss_type(_evaluate_solution(sol, times, variable), (t=times, y=observed), weight)
-
-    if loss_type == :series_log
-        n = length(observed)
-        n == 0 && return 0.0
-        obsfn = _solution_observed_function(sol, variable)
-        loss = 0.0
-        for i in 1:n
-            p = _evaluate_solution_at(sol, obsfn, times[i], variable)
-            y = observed[i]
-            if p <= 0 || isnan(p) || y <= 0
-                loss += 1e6 / n
-            else
-                ylog = observed_log === nothing ? log(y) : observed_log[i]
-                loss += (log(p) - ylog)^2
-            end
-        end
-        return weight * loss / n
-    elseif loss_type == :series_mse
-        n = length(observed)
-        n == 0 && return 0.0
-        obsfn = _solution_observed_function(sol, variable)
-        loss = 0.0
-        for i in 1:n
-            p = _evaluate_solution_at(sol, obsfn, times[i], variable)
-            d = p - observed[i]
-            loss += d * d
-        end
-        return weight * loss / n
-    else
-        predicted = _evaluate_solution(sol, times, variable)
-        return compute_loss(predicted, (t=times, y=observed), loss_type, weight)
-    end
-end
-
-function _evaluate_solution_at(sol, obsfn, t, variable)
-    obsfn === nothing && return sol(t; idxs=variable)
-    return _evaluate_observed_at(sol, obsfn, t)
 end

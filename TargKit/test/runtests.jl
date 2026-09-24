@@ -11,19 +11,6 @@ end
 
 (sol::FakeSolution)(t; idxs) = sol.slope .* t .+ sol.intercept
 
-struct FakeSolutionWithNaNProperty
-    slope::Float64
-    intercept::Float64
-end
-
-(sol::FakeSolutionWithNaNProperty)(t; idxs) = sol.slope .* t .+ sol.intercept
-
-function Base.getproperty(sol::FakeSolutionWithNaNProperty, name::Symbol)
-    name === :slope && return getfield(sol, :slope)
-    name === :intercept && return getfield(sol, :intercept)
-    return NaN
-end
-
 @testset verbose=true "TargKit" begin
 
     # ============================================================
@@ -590,11 +577,11 @@ end
                 value = [0.5, 0.8],
             )
             ts = TargetSet(df;
-                condition = :treatment => Dict("Anti-IL5" => :mepolizumab, "Anti-IL13" => :lebrikizumab),
+                variable = :treatment => Dict("Anti-IL5" => :mepolizumab, "Anti-IL13" => :lebrikizumab),
             )
-            @test :condition in propertynames(ts.df)
-            @test ts.df.condition[1] == :mepolizumab
-            @test ts.df.condition[2] == :lebrikizumab
+            @test :variable in propertynames(ts.df)
+            @test ts.df.variable[1] == :mepolizumab
+            @test ts.df.variable[2] == :lebrikizumab
         end
 
         @testset "recode preserves Dict values" begin
@@ -605,20 +592,17 @@ end
             @test ts.df.variable[1] === endpoint
         end
 
-        @testset "auto-generate name from condition + variable" begin
-            df = DataFrame(
-                treatment = ["A", "A", "B", "B"],
-                endpoint = ["X", "Y", "X", "Y"],
-                value = [1.0, 2.0, 3.0, 4.0],
-            )
-            ts = TargetSet(df;
-                condition = :treatment => Dict("A" => :a, "B" => :b),
-                variable = :endpoint => Dict("X" => :x, "Y" => :y),
-            )
-            @test nrow(ts) == 4
-            @test :name in propertynames(ts.df)
-            @test ts.df.name[1] == :a_x
-            @test ts.df.name[4] == :b_y
+        @testset "auto-generate name" begin
+            df = DataFrame(endpoint = ["X", "Y"], value = [1.0, 2.0])
+            ts = TargetSet(df; variable = :endpoint => Dict("X" => :x, "Y" => :y))
+            @test ts.df.name == [:x, :y]
+            @test TargetSet(DataFrame(value = [1.0, 2.0])).df.name == [:target_1, :target_2]
+        end
+
+        @testset "condition and timepoint keywords are gone" begin
+            df = DataFrame(dose = [10.0], value = [1.0])
+            @test_throws MethodError TargetSet(df; condition = :dose)
+            @test_throws MethodError TargetSet(df; timepoint = :dose)
         end
 
         @testset "NaN lower/upper auto-filled" begin
@@ -655,18 +639,18 @@ end
             FeNO = [0.9, 0.7],
             FEV1 = [1.05, 1.12],
         )
-        ts = TargetSet(df;
-            targets = [:Blood_Eos, :FeNO, :FEV1],
-            condition = :drug,
-            timepoint = :time,
-            loss = :log,
-        )
+        ts = TargetSet(df; targets = [:Blood_Eos, :FeNO, :FEV1], loss = :log)
 
         @test nrow(ts) == 6  # 2 drugs × 3 variables
         @test :variable in propertynames(ts.df)
         @test :value in propertynames(ts.df)
-        @test :condition in propertynames(ts.df)
+        @test :drug in propertynames(ts.df)
         @test Set(ts.df.variable) == Set([:Blood_Eos, :FeNO, :FEV1])
+
+        # Wide data with match/at: the stacked columns become per-row variables
+        matched = TargetSet(df; targets = [:Blood_Eos, :FeNO, :FEV1], match = :drug, at = :time)
+        @test matched.match.variable === nothing
+        @test Symbol("Blood_Eos,drug=mepo,time=24.0") in matched.df.name
     end
 
     # ============================================================
@@ -711,17 +695,17 @@ end
     # 17. score() — TargetSet with convention-based prediction
     # ============================================================
     @testset "score() — TargetSet" begin
-        @testset "convention: sim[name]" begin
-            df = DataFrame(name=[:x, :y], value=[2.0, 4.0], lower=[1.0, 3.0], upper=[3.0, 5.0])
-            ts = TargetSet(df)
+        @testset "requires match/at or predict" begin
+            ts = TargetSet(DataFrame(name=[:x, :y], value=[2.0, 4.0], lower=[1.0, 3.0], upper=[3.0, 5.0]))
             sim = Dict(:x => 2.0, :y => 4.0)
+            @test_throws ArgumentError score(ts; sim=sim)
 
-            report = score(ts; sim=sim)
+            report = score(ts; sim=sim, predict=(sim, row) -> sim[row.name])
             @test report.total_loss ≈ 0.0 atol=1e-12
             @test report.n_met == 2
         end
 
-        @testset "convention: sim[condition][variable]" begin
+        @testset "match with a per-row variable" begin
             df = DataFrame(
                 treatment = ["A", "B"],
                 endpoint = ["x", "y"],
@@ -729,64 +713,21 @@ end
                 lower = [1.0, 3.0],
                 upper = [3.0, 5.0],
             )
-            ts = TargetSet(df;
-                condition = :treatment => Dict("A" => :a, "B" => :b),
-                variable = :endpoint => Dict("x" => :x, "y" => :y),
-            )
-            sim = Dict(:a => Dict(:x => 2.0), :b => Dict(:y => 4.0))
+            ts = TargetSet(df; match = :treatment, variable = :endpoint)
+            sim = Dict("A" => DataFrame(x = [2.0]), "B" => DataFrame(y = [4.0]))
 
             report = score(ts; sim=sim)
             @test report.total_loss ≈ 0.0 atol=1e-12
             @test report.n_met == 2
+            @test :treatment in propertynames(report.details)   # metadata columns preserved
+            @test :variable in propertynames(report.details)
         end
 
-        @testset "convention: solution series targets" begin
-            df = DataFrame(
-                dose = [20.0],
-                organ = ["brain"],
-                value = [(t = [1.0, 2.0], y = [3.0, 5.0])],
-            )
-            ts = TargetSet(df;
-                condition = :dose,
-                variable = :organ => Dict("brain" => :brain),
-            )
-            sim = Dict(20.0 => FakeSolution(2.0, 1.0))
+        @testset "series targets through predict" begin
+            ts = TargetSet(DataFrame(name = [:brain], value = [(t = [1.0, 2.0], y = [3.0, 5.0])]))
 
-            report = score(ts; sim=sim)
-            @test report.total_loss ≈ 0.0 atol=1e-12
-            @test report.details.predicted[1] == [3.0, 5.0]
-        end
-
-        @testset "convention: solution series before property lookup" begin
-            df = DataFrame(
-                dose = [20.0],
-                organ = ["brain"],
-                value = [(t = [1.0, 2.0], y = [3.0, 5.0])],
-            )
-            ts = TargetSet(df;
-                condition = :dose,
-                variable = :organ => Dict("brain" => :brain),
-            )
-            sim = Dict(20.0 => FakeSolutionWithNaNProperty(2.0, 1.0))
-
-            report = score(ts; sim=sim)
-            @test report.total_loss ≈ 0.0 atol=1e-12
-            @test report.details.predicted[1] == [3.0, 5.0]
-        end
-
-        @testset "convention: nested series targets" begin
-            df = DataFrame(
-                treatment = ["A"],
-                endpoint = ["x"],
-                value = [(t = [1.0, 2.0], y = [3.0, 5.0])],
-            )
-            ts = TargetSet(df;
-                condition = :treatment => Dict("A" => :a),
-                variable = :endpoint => Dict("x" => :x),
-            )
-            sim = Dict(:a => Dict(:x => [3.0, 5.0]))
-
-            report = score(ts; sim=sim)
+            report = score(ts; sim = FakeSolution(2.0, 1.0),
+                predict = (sol, row) -> sol(row.value.t; idxs = row.name))
             @test report.total_loss ≈ 0.0 atol=1e-12
             @test report.details.predicted[1] == [3.0, 5.0]
         end
@@ -805,26 +746,9 @@ end
             ts2 = TargetSet(DataFrame(name=[:b], value=[2.0], lower=[1.5], upper=[2.5]))
             sim = Dict(:a => 1.0, :b => 2.0)
 
-            report = score(ts1, ts2; sim=sim)
+            report = score(ts1, ts2; sim=sim, predict=(sim, row) -> sim[row.name])
             @test report.n_met == 2
             @test nrow(report.details) == 2
-        end
-
-        @testset "metadata columns preserved" begin
-            df = DataFrame(
-                treatment = ["A"],
-                endpoint = ["x"],
-                value = [2.0],
-            )
-            ts = TargetSet(df;
-                condition = :treatment => Dict("A" => :a),
-                variable = :endpoint => Dict("x" => :x),
-            )
-            sim = Dict(:a => Dict(:x => 2.0))
-
-            report = score(ts; sim=sim)
-            @test :condition in propertynames(report.details)
-            @test :variable in propertynames(report.details)
         end
     end
 
@@ -833,9 +757,15 @@ end
     # ============================================================
     @testset "fit() — TargetSet" begin
         ts = TargetSet(DataFrame(name=[:sum_val], value=[2.0]))
+        simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b])
+
+        # Without match/at or predict there is no mapping to the simulation output
+        @test_throws ArgumentError fit(ts; simulate = simulate, params = [:a, :b],
+            bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]), strategy = :nm, verbose = false)
 
         result = fit(ts;
-            simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b]),
+            simulate = simulate,
+            predict = (sim, row) -> sim[row.name],
             params = [:a, :b],
             bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
             x0 = [1.0, 1.0],
@@ -851,18 +781,15 @@ end
 
     @testset "fit() — TargetSet with custom predict" begin
         df = DataFrame(
-            treatment = ["A"],
+            treatment = [:a],
             endpoint = ["x"],
             value = [2.0],
         )
-        ts = TargetSet(df;
-            condition = :treatment => Dict("A" => :a),
-            variable = :endpoint => Dict("x" => :x),
-        )
+        ts = TargetSet(df; variable = :endpoint => Dict("x" => :x))
 
         result = fit(ts;
             simulate = overrides -> Dict(:a => Dict(:x => overrides[:p])),
-            predict = (sim, row) -> sim[row.condition][row.variable],
+            predict = (sim, row) -> sim[row.treatment][row.variable],
             params = [:p],
             bounds = (lb = [1.0], ub = [5.0]),
             x0 = [2.0],
@@ -881,6 +808,7 @@ end
             redirect_stdout(io) do
                 fit(ts;
                     simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b]),
+                    predict = (sim, row) -> sim[row.name],
                     params = [:a, :b],
                     bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
                     x0 = [0.5, 0.5],
@@ -907,6 +835,7 @@ end
 
         obj = objective(ts;
             simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b]),
+            predict = (sim, row) -> sim[row.name],
             params = [:a, :b],
             bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
             print_every = 1000,
@@ -916,6 +845,7 @@ end
 
         @test_throws ArgumentError objective(ts;
             simulate = overrides -> nothing,
+            predict = (sim, row) -> sim[row.name],
             params = [:a], bounds = (lb = [0.1], ub = [5.0]),
             print_every = 0,
         )
@@ -931,18 +861,20 @@ end
     # ============================================================
     @testset "objective() — TargetSet" begin
         ts = TargetSet(DataFrame(name=[:x], value=[10.0], lower=[5.0], upper=[15.0]))
+        simulate = overrides -> Dict(:x => overrides[:p])
+
+        @test_throws ArgumentError objective(ts; simulate = simulate, params = [:p],
+            bounds = (lb = [5.0], ub = [15.0]))
 
         obj = objective(ts;
-            simulate = overrides -> Dict(:x => overrides[:p]),
+            simulate = simulate,
+            predict = (sim, row) -> sim[row.name],
             params = [:p],
             bounds = (lb = [5.0], ub = [15.0]),
             on_eval = nothing,
         )
-
         @test obj isa TargKit.ObjectiveFunction
-        @test obj.prepared_targets !== nothing
-        loss = obj(log.([10.0]))
-        @test loss ≈ 0.0 atol=1e-12
+        @test obj(log.([10.0])) ≈ 0.0 atol=1e-12
     end
 
     @testset "objective() — TargetSet series loss" begin
@@ -953,33 +885,11 @@ end
 
         obj = objective(ts;
             simulate = overrides -> Dict(:curve => [overrides[:p], 2 * overrides[:p]]),
+            predict = (sim, row) -> sim[row.name],
             params = [:p],
             bounds = (lb = [0.1], ub = [10.0]),
             on_eval = nothing,
         )
-
-        @test obj.prepared_targets !== nothing
-        @test obj(log.([2.0])) ≈ 0.0 atol=1e-12
-    end
-
-    @testset "objective() — TargetSet prepared solution convention" begin
-        ts = TargetSet(DataFrame(
-            dose = [20.0],
-            organ = ["brain"],
-            value = [(t = [1.0, 2.0], y = [3.0, 5.0])],
-        );
-            condition = :dose,
-            variable = :organ => Dict("brain" => :brain),
-        )
-
-        obj = objective(ts;
-            simulate = overrides -> Dict(20.0 => FakeSolution(overrides[:slope], 1.0)),
-            params = [:slope],
-            bounds = (lb = [0.1], ub = [10.0]),
-            on_eval = nothing,
-        )
-
-        @test obj.prepared_targets !== nothing
         @test obj(log.([2.0])) ≈ 0.0 atol=1e-12
     end
 

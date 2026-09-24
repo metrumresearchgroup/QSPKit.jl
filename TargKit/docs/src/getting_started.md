@@ -53,7 +53,10 @@ target points, or leave out `saveat` so solutions are evaluated with the
 solver's dense output. A target at a dose time is ambiguous (the solution holds
 the values before and after the dose) and is an error.
 
-The `condition` and `timepoint` keywords are deprecated; use `match` and `at`.
+A TargetSet needs a mapping to the simulation output: `match`/`at`, or a
+`predict = (sim, row) -> value` function. Without one, `score`, `objective`,
+and `fit` raise an error; there is no implicit lookup by condition or target
+name.
 
 ## Build an objective
 
@@ -77,9 +80,8 @@ configured `failure_penalty` for that evaluation.
 
 An opt-in `bounds_penalty` is the other explicit optimization control that may
 return a synthetic penalty. Ordinary scoring stays strict: `NaN`/`Inf`,
-nonpositive log values, invalid series elements, missing convention lookup
-sources, and bounds missing from a `:range_only` target raise descriptive
-errors instead.
+nonpositive log values, invalid series elements, and bounds missing from a
+`:range_only` target raise descriptive errors instead.
 
 ## Fit directly or as a pipeline
 

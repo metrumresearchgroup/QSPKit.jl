@@ -184,41 +184,26 @@ end
 
 Score one or more TargetSets against simulation results.
 
-# Matching (`match` / `at`)
-TargetSets built with `match`/`at` are matched against `sim` row by row; see
-`TargKit/docs/matching.md`.
+Each TargetSet needs a mapping to `sim`: either it was built with `match`/`at`
+(see `TargKit/docs/matching.md`), or `predict` extracts each row's prediction.
 
-# Convention-based extraction
-If the TargetSet has `:condition` and `:variable` columns, predictions are
-auto-extracted as `sim[condition][variable]` for endpoint values. If the target
-value is a series `(t=..., y=...)` and `sim[condition]` is solution-like, the
-prediction is evaluated as `sim[condition](value.t; idxs=variable)`.
-
-# Custom predict
-    score(ts; sim=sims, predict=(sims, target) -> sims[target.condition][target.variable][end])
+    score(ts; sim = sims, predict = (sims, row) -> sims[row.arm](row.TIME; idxs = :Conc))
 
 # Arguments
 - `ts...` — one or more TargetSets
-- `sim` — Dict or NamedTuple of simulation results, keyed by condition
-- `predict` — optional `(sim, row) -> predicted_value` function
+- `sim` — the simulation output
+- `predict` — `(sim, row) -> predicted_value`, for TargetSets without `match`/`at`
 """
 function score(targets_in::TargetSet...; sim, predict=nothing)
     all_rows = NamedTuple[]
 
     for ts in targets_in
         default_loss = ts.loss
-        !isnothing(ts.match) && !isnothing(predict) && throw(ArgumentError(
-            "score: pass either `predict` or a TargetSet with `match`/`at`, not both"))
-        batch = isnothing(ts.match) ? nothing : _match_predictions(sim, ts.df, ts.match)
+        predictor = _target_predictor(ts, predict, "score")
+        batch = _batch_predictions(predictor, sim, ts.df)
 
         for (i, row) in enumerate(eachrow(ts.df))
-            predicted = if !isnothing(batch)
-                batch[i]
-            elseif !isnothing(predict)
-                predict(sim, row)
-            else
-                _convention_predict(sim, row)
-            end
+            predicted = batch === nothing ? predictor(sim, row) : batch[i]
 
             lt = _resolve_loss_type(row, default_loss)
             w = _resolve_weight(row)
@@ -255,73 +240,8 @@ function score(targets_in::TargetSet...; sim, predict=nothing)
     return ScoreReport(total_loss, n_met, n_total, details)
 end
 
-# ============================================================
-# Convention-based prediction
-# ============================================================
-
-"""Extract prediction using convention: sim[condition][variable] or sim[name]."""
-function _convention_predict(sim, row)
-    has_condition = hasproperty(row, :condition) && !ismissing(row.condition)
-    has_variable = hasproperty(row, :variable) && !ismissing(row.variable)
-
-    if has_condition && has_variable
-        cond_result = _safe_getindex(sim, row.condition)
-        isnothing(cond_result) && return NaN
-        return _predict_condition_variable(cond_result, row)
-    elseif has_variable
-        if _is_series_value(row.value) && !_is_mapping_result(sim)
-            return _evaluate_solution(sim, row.value.t, row.variable)
-        end
-        val = _safe_getindex(sim, row.variable)
-        if isnothing(val) && _is_series_value(row.value)
-            return _evaluate_solution(sim, row.value.t, row.variable)
-        end
-        isnothing(val) && return NaN
-        return _extract_prediction(val, row)
-    elseif has_condition
-        val = _safe_getindex(sim, row.condition)
-        isnothing(val) && return NaN
-        return _extract_prediction(val, row)
-    else
-        # Try by :name
-        val = _safe_getindex(sim, row.name)
-        isnothing(val) && error("Cannot extract prediction for target :$(row.name). " *
-            "Provide a `predict` function or add :condition/:variable columns.")
-        return _extract_prediction(val, row)
-    end
-end
-
-"""Extract prediction for a row with both condition and variable roles."""
-function _predict_condition_variable(cond_result, row)
-    if _is_series_value(row.value) && !_is_mapping_result(cond_result)
-        return _evaluate_solution(cond_result, row.value.t, row.variable)
-    end
-
-    if hasproperty(row, :timepoint) && !ismissing(row.timepoint) && !_is_mapping_result(cond_result)
-        return _evaluate_solution(cond_result, row.timepoint, row.variable)
-    end
-
-    val = _safe_getindex(cond_result, row.variable)
-    if !isnothing(val)
-        return _extract_prediction(val, row)
-    end
-
-    if _is_series_value(row.value)
-        return _evaluate_solution(cond_result, row.value.t, row.variable)
-    end
-
-    if hasproperty(row, :timepoint) && !ismissing(row.timepoint)
-        return _evaluate_solution(cond_result, row.timepoint, row.variable)
-    end
-
-    return NaN
-end
-
 """True for series-valued targets encoded as `(t=..., y=...)`."""
 _is_series_value(value) = value isa NamedTuple && haskey(value, :t) && haskey(value, :y)
-
-"""True when a condition result should be probed as `result[variable]` first."""
-_is_mapping_result(value) = value isa AbstractDict || value isa NamedTuple
 
 """Evaluate a solution-like object at `times`, optionally selecting `idxs`."""
 function _evaluate_solution(sol, times, variable)
@@ -384,41 +304,4 @@ end
 function _unwrap_observed_value(value)
     value isa AbstractArray && length(value) == 1 && return only(value)
     return value
-end
-
-"""Extract either a whole series prediction or the scalar endpoint convention."""
-function _extract_prediction(val, row)
-    _is_series_value(row.value) && return val
-    return _extract_scalar(val)
-end
-
-"""Safely index into a Dict/NamedTuple/property container, returning nothing on absence."""
-_safe_getindex(container::AbstractDict, key) = get(container, key, nothing)
-
-function _safe_getindex(container::NamedTuple, key)
-    sym = _property_key(key)
-    sym === nothing && return nothing
-    return haskey(container, sym) ? getfield(container, sym) : nothing
-end
-
-function _safe_getindex(container, key)
-    sym = _property_key(key)
-    if sym !== nothing && hasproperty(container, sym)
-        return getproperty(container, sym)
-    end
-    return nothing
-end
-
-_property_key(key::Symbol) = key
-_property_key(key::AbstractString) = Symbol(key)
-_property_key(key) = nothing
-
-"""Extract a scalar from a value — if it's indexable with `end`, take the last element."""
-function _extract_scalar(val)
-    val isa Real && return val
-    try
-        return val[end]
-    catch
-        return val
-    end
 end

@@ -22,8 +22,11 @@
   mismatch before optimization starts. Values between saved points are not
   interpolated, and a target at a dose time is an error. Design:
   `TargKit/docs/matching.md`.
-- Deprecated the TargKit `condition` and `timepoint` keywords in favor of
-  `match` and `at`. They keep working unchanged.
+- Removed the TargKit `condition` and `timepoint` keywords and the implicit
+  prediction lookup (`sim[condition][variable]`, `sim[target name]`). A
+  TargetSet now needs `match`/`at` or a `predict` function; without one,
+  `score`, `objective`, and `fit` raise an error instead of silently scoring
+  every target with a penalty.
 - TargKit `TargetSet` role keywords that name a missing column, or that would
   rename a column onto an existing one, are now errors instead of being
   silently ignored.

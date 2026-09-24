@@ -157,8 +157,8 @@ end
 
     @testset "construction errors" begin
         df = DataFrame(dose = [10.0], y = [1.0])
-        @test_throws ArgumentError TargetSet(df; match = :dose, value = :y, condition = :dose)
-        @test_throws ArgumentError TargetSet(df; at = :TIME => 1.0, value = :y, timepoint = :dose)
+        @test_throws MethodError TargetSet(df; match = :dose, value = :y, condition = :dose)
+        @test_throws MethodError TargetSet(df; at = :TIME => 1.0, value = :y, timepoint = :dose)
         @test_throws ArgumentError TargetSet(df; match = :nope, value = :y)
         @test_throws ArgumentError TargetSet(df; match = :dose, value = :y, at = :nope)
         @test_throws ArgumentError TargetSet(df; match = :dose, value = :y, at = :dose => (x -> 2x))

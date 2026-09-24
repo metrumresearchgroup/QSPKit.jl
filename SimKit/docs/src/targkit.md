@@ -32,5 +32,5 @@ span.
 Use TargKit's row filters to split objectives without rebuilding target tables:
 
 ```julia
-dupi_targets = drug_response |> where(:condition => :dupilumab)
+low_dose_targets = targets_pk |> where(:dose => 10.0)
 ```

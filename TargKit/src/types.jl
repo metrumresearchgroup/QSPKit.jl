@@ -26,34 +26,6 @@ struct ScoreReport
 end
 
 # ============================================================
-# Prepared convention-scoring plan
-# ============================================================
-
-struct PreparedConventionTargets
-    names::Vector{Symbol}
-    values::Vector{Any}
-    series_log_values::Vector{Any}
-    lowers::Vector{Float64}
-    uppers::Vector{Float64}
-    weights::Vector{Float64}
-    row_losses::Vector{Any}
-    conditions::Union{Nothing, Vector{Any}}
-    variables::Union{Nothing, Vector{Any}}
-    timepoints::Union{Nothing, Vector{Any}}
-    series_plan::Any
-end
-
-struct PreparedSeriesPlan
-    conditions::Union{Nothing, Vector{Any}}
-    variables::Vector{Any}
-    times::Vector{Any}
-    observed::Vector{Any}
-    observed_logs::Vector{Any}
-    weights::Vector{Float64}
-    loss_types::Vector{Symbol}
-end
-
-# ============================================================
 # FitResult — output of fit()
 # ============================================================
 
@@ -79,7 +51,6 @@ FitResult(params, loss, report, converged, method) =
 
 struct ObjectiveFunction
     target_pairs::Vector{Pair{DataFrame, Function}}  # df => predict_fn
-    prepared_targets::Union{Nothing, Vector{PreparedConventionTargets}}
     simulate::Function
     param_names::Vector{Symbol}
     bounds::NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}}

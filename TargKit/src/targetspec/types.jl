@@ -33,7 +33,7 @@ Implements the Tables.jl interface for DataFrame ecosystem interoperability.
 - `loss::Union{Symbol, Function}` — default loss type for scoring
 - `metadata::Any` — optional YspecMetadata (from SpecKit), or nothing
 - `match::Union{MatchSpec, Nothing}` — how rows match simulation output, or
-  nothing for the `condition`/`variable` convention
+  nothing when a `predict` function maps them
 """
 struct TargetSet
     df::DataFrame
