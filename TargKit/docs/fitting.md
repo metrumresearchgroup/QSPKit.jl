@@ -25,6 +25,22 @@ result = fit(obj::ObjectiveConfig; kwargs...) -> FitResult
 
 `fit()` automatically calls `reset!(obj)` at the start, resetting the evaluation counter and best-loss tracker. If an `on_eval` callback is supplied, its progress tracking starts fresh for each `fit()` call.
 
+### Status Every N Evaluations
+
+Pass `print_every = N` to print a status line every `N` objective evaluations, whichever stage is running:
+
+```julia
+result = fit(targets; simulate, params, keyfile, print_every = 200)
+```
+
+```
+  [eval 200 | stage 1: ParticleSwarm restart 1/3] loss=2.3457 best=1.9120 (6.1s)
+  [eval 400 | stage 1: ParticleSwarm restart 2/3] loss=1.8812 best=1.8765 (12.3s)
+  [eval 600 | stage 2: NelderMead] loss=0.4521 best=0.4519 (18.0s)
+```
+
+The count is objective evaluations, not optimizer iterations. One PSO iteration costs about `n_particles` evaluations, and one LBFGS iteration costs several for its finite-difference gradient. The count runs continuously across stages and restarts. For a pre-built objective, set `print_every` in `objective()`.
+
 ### Starting Point
 
 If `x0` is not provided, `fit()` starts at the midpoint of the (log-)bounds. If `x0` is provided, it must be in the transform space (i.e., log-space if `transform=:log`).

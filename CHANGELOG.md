@@ -7,6 +7,10 @@
   Swept model parameters and states are staged with `with`; other swept values
   are passed only to the `events` function. Remaining keywords go to `simulate`.
 - Exported `scan` from the root `QSPKit` module.
+- Added `print_every = N` to TargKit `fit`, `setup`, and `objective`. It prints
+  a status line every `N` objective evaluations in every fit stage and restart,
+  with the eval count, stage label, current and best loss, and elapsed time:
+  `[eval 400 | stage 1: ParticleSwarm restart 2/3] loss=0.8123 best=0.7011 (12.3s)`.
 - Fixed the first ShowKit R call in a session logging `Precompiled image RCall
   not available` while loading `SciMLBaseRCallExt`. CondaR now precompiles
   RCall for the selected R environment before importing it. Julia's loader had

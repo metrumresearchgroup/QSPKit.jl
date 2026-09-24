@@ -3,7 +3,7 @@
 # ============================================================
 
 """
-    setup(targets...; simulate, predict, params, keyfile, bounds, x0, loss, verbose, ...) -> FitState
+    setup(targets...; simulate, predict, params, keyfile, bounds, x0, loss, print_every, verbose, ...) -> FitState
 
 Prepare a fitting problem without running any optimization.
 Returns a FitState ready for piping through `fit(solver)` stages.
@@ -30,6 +30,7 @@ function setup(
     loss::Union{Symbol, Function} = :log,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
+    print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     verbose::Bool = true,
 )
@@ -42,7 +43,7 @@ function setup(
     param_names, param_bounds = _resolve_params(params, bounds)
     obj = objective(targets_in...; simulate=simulate, predict=predict, params=param_names,
                     bounds=param_bounds, loss=loss, failure_penalty=failure_penalty,
-                    on_eval=on_eval, bounds_penalty=bounds_penalty)
+                    on_eval=on_eval, print_every=print_every, bounds_penalty=bounds_penalty)
     reset!(obj)
 
     lb = obj.log_bounds.lb

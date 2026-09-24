@@ -37,6 +37,10 @@ Fit targets to a simulation model.
         bounds = get_bounds(keyfile, params),
         x0 = collect(get_values(keyfile, params)),
     )
+
+`print_every = N` prints a status line every `N` objective evaluations, in every
+stage (PSO, NelderMead, LBFGS, restarts). Evaluations are not optimizer
+iterations: one PSO iteration costs about `n_particles` evaluations.
 """
 function fit(
     pairs::Pair{<:AbstractDataFrame, <:Function}...;
@@ -48,12 +52,13 @@ function fit(
     loss::Union{Symbol, Function} = :log,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
+    print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     verbose::Bool = true,
 )
     obj = objective(pairs...; simulate=simulate, params=params, bounds=bounds,
                     loss=loss, failure_penalty=failure_penalty, on_eval=on_eval,
-                    bounds_penalty=bounds_penalty)
+                    print_every=print_every, bounds_penalty=bounds_penalty)
     return fit(obj; strategy=strategy, x0=x0, verbose=verbose)
 end
 
@@ -143,6 +148,8 @@ function _run_stage(obj, stage::Stage, x_start, lb, ub, verbose, stage_idx, n_st
     best_success = false
 
     for r in 1:stage.restarts
+        restart_str = stage.restarts > 1 ? " restart $r/$(stage.restarts)" : ""
+        obj._stage_label[] = "stage $stage_idx: $solver_name$restart_str"
         x_init = r == 1 ? copy(x_start) : lb .+ rand(length(lb)) .* (ub .- lb)
         x_init = clamp.(x_init, lb, ub)
 
@@ -162,7 +169,6 @@ function _run_stage(obj, stage::Stage, x_start, lb, ub, verbose, stage_idx, n_st
         candidate_loss = candidate_x == sol.u ? sol.objective : obj(candidate_x)
 
         if verbose
-            restart_str = stage.restarts > 1 ? " restart $r/$(stage.restarts)" : ""
             println("  Stage $stage_idx/$n_stages ($solver_name$restart_str): loss = $(round(candidate_loss; digits=6)), retcode = $(sol.retcode)")
         end
 
@@ -260,6 +266,10 @@ Fit one or more TargetSets to a simulation model.
 - **Optic pairs** (new): `params=[@param(k6) => bounds_from(kf, :k6), @param(k13) => (0.01, 5.0)]`
 
 With optic pairs, bounds are co-located with parameter names — can't get out of sync.
+
+`print_every = N` prints a status line every `N` objective evaluations in every stage:
+
+    [eval 400 | stage 1: ParticleSwarm restart 2/3] loss=0.8123 best=0.7011 (12.3s)
 """
 function fit(
     targets_in::TargetSet...;
@@ -273,6 +283,7 @@ function fit(
     loss::Union{Symbol, Function} = :log,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
+    print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     verbose::Bool = true,
 )
@@ -280,7 +291,7 @@ function fit(
         simulate=simulate, predict=predict, params=params,
         bounds=bounds, keyfile=keyfile, x0=x0, loss=loss,
         failure_penalty=failure_penalty, on_eval=on_eval,
-        bounds_penalty=bounds_penalty, verbose=verbose)
+        print_every=print_every, bounds_penalty=bounds_penalty, verbose=verbose)
 
     pipeline = _strategy_to_pipeline(strategy)
     state = state |> pipeline

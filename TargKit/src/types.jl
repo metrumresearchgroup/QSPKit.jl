@@ -86,6 +86,7 @@ struct ObjectiveFunction
     log_bounds::NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}}
     failure_penalty::Float64
     on_eval::Union{Function, Nothing}
+    print_every::Union{Int, Nothing}
     bounds_penalty::Union{Float64, Nothing}
     default_loss::Union{Symbol, Function}
     _param_scale::Any
@@ -93,6 +94,8 @@ struct ObjectiveFunction
     _eval_count::Base.RefValue{Int}
     _best_loss::Base.RefValue{Float64}
     _eval_lock::ReentrantLock
+    _stage_label::Base.RefValue{String}   # set by _run_stage, shown in print_every lines
+    _start_time::Base.RefValue{Float64}
 end
 
 (obj::ObjectiveFunction)(x) = _evaluate_objective(x, obj)

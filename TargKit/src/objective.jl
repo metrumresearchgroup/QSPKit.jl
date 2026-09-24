@@ -25,6 +25,9 @@ Build a callable objective function for optimization.
         params = [:k6, :k13],
         bounds = get_bounds(keyfile, params),
     )
+
+Pass `print_every = N` to print a status line (eval count, current stage, loss,
+best loss, elapsed time) every `N` objective evaluations, across all fit stages.
 """
 function objective(
     pairs::Pair{<:AbstractDataFrame, <:Function}...;
@@ -34,6 +37,7 @@ function objective(
     loss::Union{Symbol, Function} = :log,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
+    print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     parameter_scale::Symbol = :log,
 )
@@ -52,6 +56,7 @@ function objective(
         log_bounds,
         failure_penalty,
         on_eval,
+        _check_print_every(print_every),
         bounds_penalty,
         loss,
         Val(parameter_scale),
@@ -59,7 +64,15 @@ function objective(
         Ref(0),
         Ref(Inf),
         ReentrantLock(),
+        Ref(""),
+        Ref(time()),
     )
+end
+
+function _check_print_every(print_every)
+    isnothing(print_every) && return nothing
+    print_every > 0 || throw(ArgumentError("print_every must be a positive integer or nothing, got $print_every"))
+    return Int(print_every)
 end
 
 function _objective_transformed_bounds(bounds, parameter_scale::Symbol)
@@ -148,17 +161,28 @@ end
 # ============================================================
 
 function _fire_on_eval(obj::ObjectiveFunction, loss, x)
-    isnothing(obj.on_eval) && return nothing
+    isnothing(obj.on_eval) && isnothing(obj.print_every) && return nothing
 
-    eval_count, is_best = lock(obj._eval_lock) do
+    eval_count, is_best, best_loss = lock(obj._eval_lock) do
         obj._eval_count[] += 1
         is_best = loss < obj._best_loss[]
         is_best && (obj._best_loss[] = loss)
-        obj._eval_count[], is_best
+        obj._eval_count[], is_best, obj._best_loss[]
     end
 
-    obj.on_eval(eval_count, loss, _objective_params_snapshot(obj, x), is_best)
+    if !isnothing(obj.print_every) && eval_count % obj.print_every == 0
+        _print_eval_status(obj, eval_count, loss, best_loss)
+    end
+    isnothing(obj.on_eval) || obj.on_eval(eval_count, loss, _objective_params_snapshot(obj, x), is_best)
     return nothing
+end
+
+function _print_eval_status(obj::ObjectiveFunction, n, loss, best_loss)
+    stage = obj._stage_label[]
+    stage_str = isempty(stage) ? "" : " | $stage"
+    elapsed = round(time() - obj._start_time[]; digits=1)
+    println("  [eval $n$stage_str] loss=$(round(loss; sigdigits=6)) best=$(round(best_loss; sigdigits=6)) ($(elapsed)s)")
+    flush(stdout)
 end
 
 @generated function _objective_overrides_from_keys(::Val{keys}, ::Val{scale}, x) where {keys, scale}
@@ -194,12 +218,14 @@ end
 """
     reset!(obj::ObjectiveFunction)
 
-Reset the evaluation counter and best loss tracker.
+Reset the evaluation counter, best loss tracker, and `print_every` clock.
 """
 function reset!(obj::ObjectiveFunction)
     lock(obj._eval_lock) do
         obj._eval_count[] = 0
         obj._best_loss[] = Inf
+        obj._stage_label[] = ""
+        obj._start_time[] = time()
     end
     nothing
 end
@@ -226,6 +252,7 @@ function objective(
     loss::Union{Symbol, Function, Nothing} = nothing,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
+    print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     parameter_scale::Symbol = :log,
 )
@@ -250,6 +277,7 @@ function objective(
         loss=effective_loss,
         failure_penalty=failure_penalty,
         on_eval=on_eval,
+        print_every=print_every,
         bounds_penalty=bounds_penalty,
         parameter_scale=parameter_scale,
         prepared_targets=prepared_targets,
@@ -260,6 +288,7 @@ end
 function objective_from_pairs(
     pairs::Vector{Pair{DataFrame, Function}};
     simulate, params, bounds, loss, failure_penalty, on_eval, bounds_penalty,
+    print_every=nothing,
     parameter_scale=:log,
     prepared_targets=nothing,
 )
@@ -277,6 +306,7 @@ function objective_from_pairs(
         log_bounds,
         failure_penalty,
         on_eval,
+        _check_print_every(print_every),
         bounds_penalty,
         loss,
         Val(parameter_scale),
@@ -284,6 +314,8 @@ function objective_from_pairs(
         Ref(0),
         Ref(Inf),
         ReentrantLock(),
+        Ref(""),
+        Ref(time()),
     )
 end
 

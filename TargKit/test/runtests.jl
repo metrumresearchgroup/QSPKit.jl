@@ -874,6 +874,53 @@ end
         @test result.loss < 0.01
     end
 
+    @testset "fit() — print_every across stages" begin
+        ts = TargetSet(DataFrame(name=[:sum_val], value=[2.0]))
+        seen = Int[]
+        out = mktemp() do path, io
+            redirect_stdout(io) do
+                fit(ts;
+                    simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b]),
+                    params = [:a, :b],
+                    bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
+                    x0 = [0.5, 0.5],
+                    strategy = [
+                        Stage(ParticleSwarm(n_particles=5); maxiters=5, restarts=2),
+                        Stage(NelderMead(); maxiters=50),
+                    ],
+                    on_eval = (n, _, _, _) -> push!(seen, n),
+                    print_every = 5,
+                    verbose = false,
+                )
+            end
+            flush(io)
+            read(path, String)
+        end
+        lines = filter(startswith("  [eval"), split(out, '\n'))
+
+        @test length(lines) == length(seen) ÷ 5
+        @test all(l -> occursin(r"^  \[eval \d*[05] \| stage \d: \w+.*\] loss=\S+ best=\S+ \(\S+s\)$", l), lines)
+        @test any(l -> occursin("stage 1: ParticleSwarm restart 1/2", l), lines)
+        @test any(l -> occursin("stage 1: ParticleSwarm restart 2/2", l), lines)
+        @test any(l -> occursin("stage 2: NelderMead", l), lines)
+        @test seen == 1:length(seen)   # on_eval still fires on every evaluation
+
+        obj = objective(ts;
+            simulate = overrides -> Dict(:sum_val => overrides[:a] + overrides[:b]),
+            params = [:a, :b],
+            bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
+            print_every = 1000,
+        )
+        obj(log.([1.0, 1.0]))
+        @test obj._eval_count[] == 1   # counts without an on_eval callback
+
+        @test_throws ArgumentError objective(ts;
+            simulate = overrides -> nothing,
+            params = [:a], bounds = (lb = [0.1], ub = [5.0]),
+            print_every = 0,
+        )
+    end
+
     # ============================================================
     # 19. where() — TargetSet filtering
     # ============================================================

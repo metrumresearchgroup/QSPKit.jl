@@ -14,6 +14,7 @@ obj = objective(targets;
     priors   = Dict{Symbol,Prior}(),   # for :map only
     failure_penalty = 1e10,            # returned when simulate returns nothing
     on_eval  = nothing,                # optional progress callback
+    print_every = nothing,             # print a status line every N evaluations
     bounds_penalty = nothing,          # soft quadratic penalty coefficient
 )
 ```
@@ -31,6 +32,7 @@ obj = objective(targets;
 | `priors` | `Dict{Symbol,Prior}` | Prior distributions for MAP estimation |
 | `failure_penalty` | `Float64` | Returned when `simulate` returns `nothing` |
 | `on_eval` | `Function` or `nothing` | Optional progress callback (see below). Defaults to `nothing` for silent evaluation. |
+| `print_every` | `Int` or `nothing` | Print a status line every `N` evaluations (see below). Defaults to `nothing`. |
 | `bounds_penalty` | `Float64` or `nothing` | Soft quadratic bounds penalty coefficient. When set, out-of-bounds evaluations return `1e6 + coeff * sum(violation^2)` without calling `simulate`. Useful for NelderMead which is unconstrained. |
 
 ### The ObjectiveConfig is callable
@@ -230,6 +232,20 @@ obj = objective(targets; simulate, params, bounds,
 ```
 
 The `is_best` flag is tracked automatically by TargKit — no need to maintain your own `Ref(Inf)`.
+
+### Status every N evaluations (print_every)
+
+`print_every = N` prints one line every `N` evaluations. It works on its own or
+together with `on_eval`, and is accepted by `objective`, `fit`, and `setup`:
+
+```
+  [eval 400 | stage 1: ParticleSwarm restart 2/3] loss=0.8123 best=0.7011 (12.3s)
+  [eval 600 | stage 2: NelderMead] loss=0.4521 best=0.4519 (18.0s)
+```
+
+The stage label comes from the fit stage that is running, so the lines keep
+coming through every stage and restart. `best` is the lowest loss seen since the
+last `reset!`, and the time is measured from that reset.
 
 ### Silent evaluation
 
