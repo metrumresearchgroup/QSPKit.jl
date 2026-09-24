@@ -1,7 +1,67 @@
 # ============================================================
-# Matching targets to simulation output (match / at)
+# Matching targets to simulation output (Match: keys / at / variable)
 # See TargKit/docs/matching.md.
 # ============================================================
+
+"""
+    Match(keys...; at = nothing, variable = nothing)
+
+How a TargetSet's rows line up with one simulation's output. Pass it to
+`fit`/`setup`/`objective`/`score` as `match`/`at`/`variable` keywords, or pair it
+with a TargetSet: `fit(pk => Match(:dose; at = :TIME, variable = :Conc), ...)`.
+
+- `keys` — target columns holding discrete keys that pick a simulation: `:dose`,
+  or `:CONC => :dose` when the simulation names it differently.
+- `at` — the point within it, along one ordered axis: `:TIME` (a target column
+  named like the simulation axis), `:TIME_hr => :TIME`, or `:TIME => 672.0`
+  (every target at one point).
+- `variable` — the simulated variable each row's value is compared with: a name
+  (`:Conc`), or a `Dict` translating the TargetSet's `variable` column
+  (`Dict("plasma" => :Conc)`). Omit it when that column already holds
+  simulated names.
+"""
+struct Match
+    keys::Vector{Pair{Symbol, Symbol}}   # target column => simulation key
+    at_column::Union{Symbol, Nothing}    # target column holding each row's `at`
+    at_axis::Union{Symbol, Nothing}      # simulation axis; nothing = no `at`
+    at_value::Any                        # constant `at` when at_column === nothing
+    variable::Any                        # Symbol, AbstractDict, or nothing (the TargetSet's :variable column)
+
+    function Match(keys...; at = nothing, variable = nothing)
+        at_column, at_axis, at_value = _match_at(at)
+        variable === nothing || variable isa Symbol || variable isa AbstractDict || throw(ArgumentError(
+            "Match: `variable` is a simulated variable name or a Dict of measured => simulated names; got $(repr(variable))"))
+        new(_match_keys(collect(Any, keys)), at_column, at_axis, at_value, variable)
+    end
+end
+
+function Base.show(io::IO, m::Match)
+    keys = [t == k ? repr(t) : "$(repr(t)) => $(repr(k))" for (t, k) in m.keys]
+    options = String[]
+    if m.at_axis !== nothing
+        push!(options, "at = " * (m.at_column === nothing ? "$(repr(m.at_axis)) => $(repr(m.at_value))" :
+            m.at_column == m.at_axis ? repr(m.at_axis) : "$(repr(m.at_column)) => $(repr(m.at_axis))"))
+    end
+    m.variable === nothing || push!(options, "variable = $(repr(m.variable))")
+    print(io, "Match(", join(keys, ", "), isempty(options) ? "" : "; " * join(options, ", "), ")")
+end
+
+_match_keys(::Nothing) = Pair{Symbol, Symbol}[]
+_match_keys(col::Symbol) = [col => col]
+_match_keys(pair::Pair{Symbol, Symbol}) = [pair]
+_match_keys(cols::AbstractVector) = reduce(vcat, [_match_keys(c) for c in cols]; init=Pair{Symbol, Symbol}[])
+_match_keys(x) = throw(ArgumentError(
+    "Match: keys are :col, :col => :simkey, or a vector of these; got $(repr(x))"))
+
+_match_at(::Nothing) = (nothing, nothing, nothing)
+_match_at(col::Symbol) = (col, col, nothing)
+_match_at(pair::Pair{Symbol, Symbol}) = (first(pair), last(pair), nothing)
+_match_at(pair::Pair{Symbol, <:Function}) = throw(ArgumentError(
+    "Match: `at` does not take transforms; convert the target column first " *
+    "(e.g. @transform(df, :TIME = :TIME_hr * 3600)) and pass `at = :TIME`"))
+_match_at(pair::Pair{Symbol}) = (nothing, first(pair), last(pair))
+_match_at(x) = throw(ArgumentError(
+    "Match: `at` is :col, :col => :axis, or :axis => value; got $(repr(x))"))
 
 """
     MatchError(msg)
@@ -65,6 +125,102 @@ _has_failed_solution(source::_DictResults) = any(e -> _has_failed_solution(last(
 _has_failed_solution(source) = false
 
 # ============================================================
+# Binding a TargetSet to its mapping
+# ============================================================
+
+"""
+The mapping declared by `match`/`at`/`variable` keywords, or `predict`
+(`nothing` when neither was given). The two are alternatives.
+"""
+function _keyword_mapping(predict, match, at, variable, caller::AbstractString)
+    isnothing(match) && isnothing(at) && isnothing(variable) && return predict
+    isnothing(predict) || throw(ArgumentError(
+        "$caller: pass either `predict` or `match`/`at`/`variable`, not both"))
+    keys = isnothing(match) ? () : match isa AbstractVector ? Tuple(match) : (match,)
+    return Match(keys...; at = at, variable = variable)
+end
+
+"""
+Pair a TargetSet with its mapping for scoring: a copy of its rows (renamed after
+the `Match` keys when the names were generated) and the row predictor.
+"""
+function _bind(ts::TargetSet, mapping, caller::AbstractString)
+    mapping === nothing && throw(ArgumentError(
+        "$caller: nothing says how the TargetSet's rows line up with the simulation output. " *
+        "Pass `match`/`at`/`variable`, e.g. `match = :dose, at = :TIME => 24.0, variable = :Conc`, " *
+        "or `predict = (sim, row) -> value`. With several TargetSets, pair each with its own: " *
+        "`fit(pk => Match(:dose; at = :TIME, variable = :Conc), pd => ...; ...)`."))
+    df = DataFrame(ts.df)
+    if mapping isa Match
+        _check_match(ts, mapping, caller)
+        ts.auto_names && _match_names!(df, mapping)
+        return Pair{DataFrame, Function}(df, MatchPredictor(mapping))
+    end
+    mapping isa Function || throw(ArgumentError(
+        "$caller: pair each TargetSet with a Match(...) or a predict function; got $(typeof(mapping))"))
+    return Pair{DataFrame, Function}(df, mapping)
+end
+
+function _check_match(ts::TargetSet, m::Match, caller::AbstractString)
+    df = ts.df
+    for (col, _) in m.keys
+        _require_target_column(df, col, "match", caller)
+    end
+    isnothing(m.at_column) || _require_target_column(df, m.at_column, "at", caller)
+    any(_is_series_value, df.value) && throw(ArgumentError(
+        "$caller: series-valued targets `(t=..., y=...)` cannot be matched; " *
+        "use one row per point with `at = :TIME`, or a `predict` function"))
+
+    has_column = :variable in propertynames(df)
+    if m.variable isa Symbol
+        has_column && throw(ArgumentError(
+            "$caller: the TargetSet names each row's measured variable (its `variable` column); " *
+            "translate those names with `variable = Dict(\"<measured>\" => :<simulated>)`, " *
+            "or omit `variable` if they already are simulated names"))
+    elseif m.variable isa AbstractDict
+        has_column || throw(ArgumentError(
+            "$caller: `variable = Dict(...)` translates the TargetSet's `variable` column, " *
+            "but it has none; pass the simulated name instead, e.g. `variable = :Conc`"))
+        unmapped = unique([v for v in df.variable if _lookup_variable(m.variable, v) === nothing])
+        isempty(unmapped) || throw(ArgumentError(
+            "$caller: `variable` has no simulated name for $(join(repr.(unmapped), ", "))"))
+    else
+        has_column || throw(ArgumentError(
+            "$caller: name the simulated variable to compare with, e.g. `variable = :Conc`"))
+    end
+    return nothing
+end
+
+function _require_target_column(df::DataFrame, col::Symbol, role::String, caller::AbstractString)
+    col in propertynames(df) || throw(ArgumentError(
+        "$caller: `$role` column :$col is not in the TargetSet (columns: $(join(names(df), ", ")))"))
+    any(ismissing, df[!, col]) && throw(ArgumentError(
+        "$caller: `$role` column :$col has missing values"))
+    return nothing
+end
+
+function _lookup_variable(mapping::AbstractDict, measured)
+    for (k, v) in mapping
+        _key_equal(k, measured) && return Symbol(v)
+    end
+    return nothing
+end
+
+"""Name rows after their measured variable, match keys, and `at` column: `:"dose=10.0,TIME=24.0"`."""
+function _match_names!(df::DataFrame, m::Match)
+    cols = Symbol[first(k) for k in m.keys]
+    isnothing(m.at_column) || push!(cols, m.at_column)
+    per_row_variable = :variable in propertynames(df)
+    (isempty(cols) && !per_row_variable) && return df
+    df[!, :name] = map(eachrow(df)) do row
+        parts = ["$c=$(row[c])" for c in cols]
+        per_row_variable && pushfirst!(parts, string(row.variable))
+        Symbol(join(parts, ","))
+    end
+    return df
+end
+
+# ============================================================
 # Per-target query
 # ============================================================
 
@@ -76,13 +232,14 @@ struct _MatchQuery
     variable::Symbol
 end
 
-function _match_query(row, spec::MatchSpec)
-    keys = Pair{Symbol, Any}[simkey => row[col] for (col, simkey) in spec.keys]
-    at = isnothing(spec.at_axis) ? nothing :
-        isnothing(spec.at_column) ? spec.at_value : row[spec.at_column]
-    variable = isnothing(spec.variable) ? Symbol(row.variable) : spec.variable
+function _match_query(row, m::Match)
+    keys = Pair{Symbol, Any}[simkey => row[col] for (col, simkey) in m.keys]
+    at = isnothing(m.at_axis) ? nothing :
+        isnothing(m.at_column) ? m.at_value : row[m.at_column]
+    variable = m.variable isa Symbol ? m.variable :
+        m.variable === nothing ? Symbol(row.variable) : _lookup_variable(m.variable, row.variable)
     name = hasproperty(row, :name) ? row.name : nothing
-    return _MatchQuery(name, keys, spec.at_axis, at, variable)
+    return _MatchQuery(name, keys, m.at_axis, at, variable)
 end
 
 function _describe(q::_MatchQuery)
@@ -100,42 +257,25 @@ _describe_keys(keys) = join(["$k = $(repr(v))" for (k, v) in keys], ", ")
 # ============================================================
 
 """Predictions for every row of `df`, matched against the simulation output `sim`."""
-function _match_predictions(sim, df::AbstractDataFrame, spec::MatchSpec)
+function _match_predictions(sim, df::AbstractDataFrame, m::Match)
     source = _normalize_source(sim)
-    return Any[_resolve(source, _match_query(row, spec)) for row in eachrow(df)]
+    return Any[_resolve(source, _match_query(row, m)) for row in eachrow(df)]
 end
 
 """
-    MatchPredictor(spec)
+    MatchPredictor(match)
 
-`predict_fn` for TargetSets with `match`/`at`. Scoring and objectives call
+`predict_fn` for a TargetSet bound to a `Match`. Scoring and objectives call
 `_match_predictions` once per TargetSet; calling it per row also works.
 """
 struct MatchPredictor <: Function
-    spec::MatchSpec
+    match::Match
 end
 
-(p::MatchPredictor)(sim, row) = _resolve(_normalize_source(sim), _match_query(row, p.spec))
-
-"""
-The predictor for a TargetSet: its `match`/`at` spec, or the caller's `predict`.
-A TargetSet needs exactly one of the two; there is no implicit lookup.
-"""
-function _target_predictor(ts::TargetSet, predict, caller::AbstractString)
-    if !isnothing(ts.match)
-        isnothing(predict) || throw(ArgumentError(
-            "$caller: pass either `predict` or TargetSets built with `match`/`at`, not both"))
-        return MatchPredictor(ts.match)
-    end
-    isnothing(predict) && throw(ArgumentError(
-        "$caller: the TargetSet does not say how its rows map to the simulation output. " *
-        "Build it with `match`/`at`, e.g. `TargetSet(df; match = :dose, value = :obs => :simvar, " *
-        "at = :TIME => 24.0)`, or pass `predict = (sim, row) -> value`."))
-    return predict
-end
+(p::MatchPredictor)(sim, row) = _resolve(_normalize_source(sim), _match_query(row, p.match))
 
 """Predictions for all rows: batched for `MatchPredictor`, otherwise `nothing` (call per row)."""
-_batch_predictions(predict_fn::MatchPredictor, sim, df) = _match_predictions(sim, df, predict_fn.spec)
+_batch_predictions(predict_fn::MatchPredictor, sim, df) = _match_predictions(sim, df, predict_fn.match)
 _batch_predictions(predict_fn, sim, df) = nothing
 
 # ============================================================

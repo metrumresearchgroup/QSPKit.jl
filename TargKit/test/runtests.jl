@@ -593,10 +593,10 @@ end
         end
 
         @testset "auto-generate name" begin
-            df = DataFrame(endpoint = ["X", "Y"], value = [1.0, 2.0])
-            ts = TargetSet(df; variable = :endpoint => Dict("X" => :x, "Y" => :y))
-            @test ts.df.name == [:x, :y]
-            @test TargetSet(DataFrame(value = [1.0, 2.0])).df.name == [:target_1, :target_2]
+            ts = TargetSet(DataFrame(endpoint = ["X", "Y"], value = [1.0, 2.0]); variable = :endpoint)
+            @test ts.df.name == [:target_1, :target_2]
+            @test ts.auto_names
+            @test !TargetSet(DataFrame(name = [:a], value = [1.0])).auto_names
         end
 
         @testset "condition and timepoint keywords are gone" begin
@@ -647,10 +647,12 @@ end
         @test :drug in propertynames(ts.df)
         @test Set(ts.df.variable) == Set([:Blood_Eos, :FeNO, :FEV1])
 
-        # Wide data with match/at: the stacked columns become per-row variables
-        matched = TargetSet(df; targets = [:Blood_Eos, :FeNO, :FEV1], match = :drug, at = :time)
-        @test matched.match.variable === nothing
-        @test Symbol("Blood_Eos,drug=mepo,time=24.0") in matched.df.name
+        # The stacked columns become each row's variable, which a Match uses directly
+        sim = DataFrame(drug = [:mepo, :dupi], time = [24.0, 24.0],
+            Blood_Eos = [0.4, 0.8], FeNO = [0.9, 0.7], FEV1 = [1.05, 1.12])
+        report = score(ts; sim = sim, match = :drug, at = :time)
+        @test report.total_loss ≈ 0.0 atol=1e-12
+        @test Symbol("Blood_Eos,drug=mepo,time=24.0") in report.details.name
     end
 
     # ============================================================
@@ -713,10 +715,10 @@ end
                 lower = [1.0, 3.0],
                 upper = [3.0, 5.0],
             )
-            ts = TargetSet(df; match = :treatment, variable = :endpoint)
+            ts = TargetSet(df; variable = :endpoint)
             sim = Dict("A" => DataFrame(x = [2.0]), "B" => DataFrame(y = [4.0]))
 
-            report = score(ts; sim=sim)
+            report = score(ts; sim=sim, match = :treatment)
             @test report.total_loss ≈ 0.0 atol=1e-12
             @test report.n_met == 2
             @test :treatment in propertynames(report.details)   # metadata columns preserved

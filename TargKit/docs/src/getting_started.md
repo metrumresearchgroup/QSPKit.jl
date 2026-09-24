@@ -20,27 +20,44 @@ result. `report.total_loss` is the sum across targets.
 
 ## Match targets to simulation output
 
-A `TargetSet` built with `match` and `at` is compared with the simulation output
-the way a join matches rows:
+A `TargetSet` holds the observed data. How its rows line up with a simulation
+is declared where the two meet, on `fit`/`setup`/`objective`/`score`, like a
+join:
 
 - `match` names the target column(s) that pick a simulation: dose, donor, arm.
+  `:CONC => :dose` matches a target column against a differently named
+  simulation column.
 - `at` picks the point within it along one ordered axis: `:TIME` (a target
   column), `:TIME_hr => :TIME` (a target column matched to a differently named
   axis), or `:TIME => 672.0` (every target at one point). The axis does not have
   to be time; `at = :dose` reads a dose-response table.
-- The observed column's name is the simulated variable it is compared with.
-  `value = :obs => :simvar` names it explicitly, and a `variable` column gives
-  one per row.
+- `variable` names the simulated variable each observed value is compared with.
+  When the TargetSet has a `variable` column naming each row's measured
+  variable, `variable = Dict("plasma" => :Conc)` translates those names.
 
 ```julia
-exposure = TargetSet(target_df; match = :dose, value = :Conc, at = :TIME => 24.0)
+exposure = TargetSet(target_df; value = :Conc)
 
 sim(p) = scan(SimContext(prob) |> with(p), :dose => unique(target_df.dose);
               events = q -> ev(time = 0.0, cmt = :Depot, amt = q.dose),
               duration = 24.0)
 
-result = fit(exposure; simulate = sim, params = [:CL, :V], keyfile = kf)
+result = fit(exposure; simulate = sim,
+             match = :dose, at = :TIME => 24.0, variable = :Conc,
+             params = [:CL, :V], keyfile = kf)
 ```
+
+With several TargetSets that line up differently, pair each with its own
+`Match`, or with a predict function:
+
+```julia
+fit(pk => Match(:dose; at = :TIME, variable = :Conc),
+    pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+    simulate = sim, params = [:CL, :V, :EC50], keyfile = kf)
+```
+
+Each TargetSet is scored with its own loss; `loss = ...` on the call overrides
+them all.
 
 `simulate` may return a DataFrame (or any table), an ODE solution, a SimKit scan
 result or `SimContext`, or a Dict keyed by one match value. Each target row must
@@ -53,10 +70,9 @@ target points, or leave out `saveat` so solutions are evaluated with the
 solver's dense output. A target at a dose time is ambiguous (the solution holds
 the values before and after the dose) and is an error.
 
-A TargetSet needs a mapping to the simulation output: `match`/`at`, or a
-`predict = (sim, row) -> value` function. Without one, `score`, `objective`,
-and `fit` raise an error; there is no implicit lookup by condition or target
-name.
+A mapping is required: `match`/`at`/`variable`, or `predict = (sim, row) ->
+value`. Without one, `score`, `objective`, and `fit` raise an error; there is
+no implicit lookup by condition or target name.
 
 ## Build an objective
 

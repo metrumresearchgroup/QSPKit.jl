@@ -133,8 +133,9 @@ Score one or more `df => predict_fn` pairs against a provided context.
     report = score(baseline => predict_fn; ctx=(sol=my_sol,))
 """
 function score(pairs::Pair{<:AbstractDataFrame, <:Function}...; ctx, loss::Union{Symbol, Function}=:log)
-    all_rows = NamedTuple[]
+    tables = Vector{NamedTuple}[]
     for (df, predict_fn) in pairs
+        rows = NamedTuple[]
         batch = _batch_predictions(predict_fn, ctx, df)
         for (i, row) in enumerate(eachrow(df))
             predicted = batch === nothing ? predict_fn(ctx, row) : batch[i]
@@ -159,16 +160,25 @@ function score(pairs::Pair{<:AbstractDataFrame, <:Function}...; ctx, loss::Union
                 col in (:name, :value, :lower, :upper, :weight, :loss) && continue
                 out = merge(out, NamedTuple{(col,)}((getproperty(row, col),)))
             end
-            push!(all_rows, out)
+            push!(rows, out)
         end
+        push!(tables, rows)
     end
 
-    if isempty(all_rows)
+    return _score_report(tables)
+end
+
+"""
+The ScoreReport for per-table rows. Tables with different metadata columns (e.g.
+TargetSets keyed by `dose` and by `CONC`) stack with `missing` in the gaps.
+"""
+function _score_report(tables)
+    frames = [DataFrame(rows) for rows in tables if !isempty(rows)]
+    if isempty(frames)
         details = DataFrame(name=Symbol[], predicted=Any[], value=Any[], loss=Float64[], in_range=Union{Bool,Nothing}[])
         return ScoreReport(0.0, 0, 0, details)
     end
-
-    details = DataFrame(all_rows)
+    details = reduce((a, b) -> vcat(a, b; cols = :union), frames)
     total_loss = sum(details.loss)
     n_met = count(x -> x === true, details.in_range)
     n_total = count(x -> !isnothing(x), details.in_range)
@@ -180,29 +190,33 @@ end
 # ============================================================
 
 """
-    score(ts::TargetSet...; sim, predict=nothing) -> ScoreReport
+    score(ts::TargetSet...; sim, match, at, variable) -> ScoreReport
+    score(ts::TargetSet...; sim, predict) -> ScoreReport
+    score(ts => Match(...), ...; sim) -> ScoreReport
 
-Score one or more TargetSets against simulation results.
+Score one or more TargetSets against simulation output `sim`. Say how the rows
+line up with it: `match`/`at`/`variable` (see `Match` and
+`TargKit/docs/matching.md`), or `predict = (sim, row) -> value`. With several
+TargetSets that line up differently, pair each with its own `Match` or predict
+function. Each TargetSet is scored with its own loss.
 
-Each TargetSet needs a mapping to `sim`: either it was built with `match`/`at`
-(see `TargKit/docs/matching.md`), or `predict` extracts each row's prediction.
-
-    score(ts; sim = sims, predict = (sims, row) -> sims[row.arm](row.TIME; idxs = :Conc))
-
-# Arguments
-- `ts...` — one or more TargetSets
-- `sim` — the simulation output
-- `predict` — `(sim, row) -> predicted_value`, for TargetSets without `match`/`at`
+    score(ts; sim = scan_result, match = :dose, at = :TIME, variable = :Conc)
 """
-function score(targets_in::TargetSet...; sim, predict=nothing)
-    all_rows = NamedTuple[]
+function score(targets_in::TargetSet...; sim, predict=nothing, match=nothing, at=nothing, variable=nothing)
+    mapping = _keyword_mapping(predict, match, at, variable, "score")
+    return score((ts => mapping for ts in targets_in)...; sim=sim)
+end
 
-    for ts in targets_in
+function score(pairs::Pair{TargetSet}...; sim)
+    tables = Vector{NamedTuple}[]
+
+    for (ts, mapping) in pairs
+        rows = NamedTuple[]
         default_loss = ts.loss
-        predictor = _target_predictor(ts, predict, "score")
-        batch = _batch_predictions(predictor, sim, ts.df)
+        df, predictor = _bind(ts, mapping, "score")
+        batch = _batch_predictions(predictor, sim, df)
 
-        for (i, row) in enumerate(eachrow(ts.df))
+        for (i, row) in enumerate(eachrow(df))
             predicted = batch === nothing ? predictor(sim, row) : batch[i]
 
             lt = _resolve_loss_type(row, default_loss)
@@ -224,20 +238,12 @@ function score(targets_in::TargetSet...; sim, predict=nothing)
                 col in (:name, :value, :lower, :upper, :weight, :loss) && continue
                 out = merge(out, NamedTuple{(col,)}((getproperty(row, col),)))
             end
-            push!(all_rows, out)
+            push!(rows, out)
         end
+        push!(tables, rows)
     end
 
-    if isempty(all_rows)
-        details = DataFrame(name=Symbol[], predicted=Any[], value=Any[], loss=Float64[], in_range=Union{Bool,Nothing}[])
-        return ScoreReport(0.0, 0, 0, details)
-    end
-
-    details = DataFrame(all_rows)
-    total_loss = sum(details.loss)
-    n_met = count(x -> x === true, details.in_range)
-    n_total = count(x -> !isnothing(x), details.in_range)
-    return ScoreReport(total_loss, n_met, n_total, details)
+    return _score_report(tables)
 end
 
 """True for series-valued targets encoded as `(t=..., y=...)`."""

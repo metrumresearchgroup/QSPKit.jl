@@ -3,16 +3,22 @@
 # ============================================================
 
 """
-    setup(targets...; simulate, predict, params, keyfile, bounds, x0, loss, print_every, verbose, ...) -> FitState
+    setup(targets...; simulate, match, at, variable, params, keyfile, bounds, x0, loss, print_every, verbose, ...) -> FitState
+    setup(targets...; simulate, predict, params, ...) -> FitState
+    setup(ts => Match(...), ...; simulate, params, ...) -> FitState
 
-Prepare a fitting problem without running any optimization.
-Returns a FitState ready for piping through `fit(solver)` stages.
+Prepare a fitting problem without running any optimization, and evaluate the
+objective once at `x0` (so a mapping that does not fit the simulation output
+fails here). Returns a FitState ready for piping through `fit(solver)` stages.
+The mapping forms are those of `fit`.
 
 # Example
 ```julia
 state = setup(targets;
     simulate = sim_fn,
-    predict  = pred_fn,
+    match    = :dose,
+    at       = :TIME,
+    variable = :Conc,
     params   = [:CL, :V],
     keyfile  = kf,
 )
@@ -21,13 +27,24 @@ state = state |> fit(NelderMead(); maxiters=300) |> finish
 """
 function setup(
     targets_in::TargetSet...;
-    simulate::Function,
     predict=nothing,
+    match=nothing,
+    at=nothing,
+    variable=nothing,
+    kwargs...,
+)
+    mapping = _keyword_mapping(predict, match, at, variable, "setup")
+    return setup((ts => mapping for ts in targets_in)...; kwargs...)
+end
+
+function setup(
+    pairs::Pair{TargetSet}...;
+    simulate::Function,
     params,
     bounds::Union{NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}}, Nothing} = nothing,
     keyfile = nothing,
     x0::Union{Vector{Float64}, Nothing} = nothing,
-    loss::Union{Symbol, Function} = :log,
+    loss::Union{Symbol, Function, Nothing} = nothing,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
     print_every::Union{Integer, Nothing} = nothing,
@@ -41,7 +58,7 @@ function setup(
     end
 
     param_names, param_bounds = _resolve_params(params, bounds)
-    obj = objective(targets_in...; simulate=simulate, predict=predict, params=param_names,
+    obj = objective(pairs...; simulate=simulate, params=param_names,
                     bounds=param_bounds, loss=loss, failure_penalty=failure_penalty,
                     on_eval=on_eval, print_every=print_every, bounds_penalty=bounds_penalty)
     reset!(obj)

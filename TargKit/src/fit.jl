@@ -267,28 +267,50 @@ Fit one or more TargetSets to a simulation model.
 
 With optic pairs, bounds are co-located with parameter names — can't get out of sync.
 
+Say how the TargetSets' rows line up with the simulation output:
+
+    fit(ts; simulate, match = :DOSE_mg => :dose, at = :TIME => 24.0, variable = :Conc, params, bounds)
+    fit(ts; simulate, predict = (sim, row) -> ..., params, bounds)
+    fit(pk => Match(:dose; at = :TIME, variable = :Conc),
+        pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+        simulate, params, bounds)
+
+See `Match` and `TargKit/docs/matching.md`. Each TargetSet's rows use that
+TargetSet's loss; `loss` overrides them all.
+
 `print_every = N` prints a status line every `N` objective evaluations in every stage:
 
     [eval 400 | stage 1: ParticleSwarm restart 2/3] loss=0.8123 best=0.7011 (12.3s)
 """
 function fit(
     targets_in::TargetSet...;
-    simulate::Function,
     predict=nothing,
+    match=nothing,
+    at=nothing,
+    variable=nothing,
+    kwargs...,
+)
+    mapping = _keyword_mapping(predict, match, at, variable, "fit")
+    return fit((ts => mapping for ts in targets_in)...; kwargs...)
+end
+
+function fit(
+    pairs::Pair{TargetSet}...;
+    simulate::Function,
     params,
     bounds::Union{NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}}, Nothing} = nothing,
     keyfile = nothing,
     strategy::Union{Symbol, AbstractVector, FitPipeline, FitStep} = :pso_nm,
     x0::Union{Vector{Float64}, Nothing} = nothing,
-    loss::Union{Symbol, Function} = :log,
+    loss::Union{Symbol, Function, Nothing} = nothing,
     failure_penalty::Float64 = 1e10,
     on_eval::Union{Function, Nothing} = nothing,
     print_every::Union{Integer, Nothing} = nothing,
     bounds_penalty::Union{Float64, Nothing} = nothing,
     verbose::Bool = true,
 )
-    state = setup(targets_in...;
-        simulate=simulate, predict=predict, params=params,
+    state = setup(pairs...;
+        simulate=simulate, params=params,
         bounds=bounds, keyfile=keyfile, x0=x0, loss=loss,
         failure_penalty=failure_penalty, on_eval=on_eval,
         print_every=print_every, bounds_penalty=bounds_penalty, verbose=verbose)

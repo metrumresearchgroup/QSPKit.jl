@@ -1,6 +1,7 @@
-# TargKit: matching targets to simulation output (`match` / `at`)
+# TargKit: matching targets to simulation output (`Match`)
 
-Status: accepted, 2026-09-24.
+Status: accepted, 2026-09-24. The mapping is declared where a TargetSet meets a
+simulation (`fit`, `setup`, `objective`, `score`), not on the TargetSet.
 
 ## Problem
 
@@ -20,48 +21,61 @@ reshape their simulation output into nested Dicts or write a `predict` closure.
 
 ## Design
 
-A target row is matched to the simulation output the way a join matches rows:
+A TargetSet holds the observed data only. How its rows line up with one
+simulation's output is a separate `Match`, given where the two meet, like a join:
 
-- **`match`** picks the curve: one or more discrete keys (dose, donor, arm).
+- **keys** (`match`) pick the curve: one or more discrete keys (dose, donor, arm).
 - **`at`** picks the point on that curve: a position along one ordered axis
   (time, dose, ...). It is not tied to time.
-- **`value`** is the observed number. The simulated variable it is compared
-  with defaults to the value column's name.
+- **`variable`** names the simulated variable each row's observed value is
+  compared with.
 
 ```julia
-ts = TargetSet(target_df;
-    match = :dose,                 # target column(s) matched against the sim output
-    value = :Conc,                 # observed column; also the simulated variable
-    at    = :TIME => 24.0,         # every target at TIME = 24
-)
+targets = TargetSet(target_df; value = :Conc)          # data: what was observed
 
 sim(p) = scan(SimContext(prob) |> with(p), :dose => unique(target_df.dose);
               events = q -> ev(time=0.0, cmt=:Depot, amt=q.dose),
               duration = 24.0)
 
-res = fit(ts; simulate = sim, params, keyfile)
+res = fit(targets; simulate = sim,                     # mapping: how it lines up with `sim`
+          match = :dose, at = :TIME => 24.0, variable = :Conc,
+          params, keyfile)
 ```
 
-### TargetSet keywords
+The same data can be fitted against another model or output shape by changing
+only the mapping. With several TargetSets that line up differently, pair each
+with its own `Match` (or predict function):
 
-| Keyword | Forms | Meaning |
+```julia
+fit(pk => Match(:dose; at = :TIME, variable = :Conc),
+    pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+    simulate = sim, params, bounds)
+```
+
+### Mapping (`Match` / keywords)
+
+`fit`, `setup`, `objective`, and `score` take `match`, `at`, and `variable`
+keywords (one mapping for every TargetSet), `predict` (the alternative), or
+`TargetSet => Match(...)` / `TargetSet => predict_fn` pairs.
+
+| Part | Forms | Meaning |
 |---|---|---|
-| `match` | `:col`, `:col => :simkey`, or a vector of these | Target column(s) holding discrete keys. `:col => :simkey` matches a target column against a differently named simulation key. |
+| keys (`match`) | `:col`, `:col => :simkey`, or a vector of these | Target column(s) holding discrete keys. `:col => :simkey` matches a target column against a differently named simulation key. |
 | `at` | `:col`, `:col => :axis`, `:axis => value` | One ordered axis. `:col` reads each row's position from a target column with the same name as the simulation axis; `:col => :axis` maps a target column to a differently named axis; `:axis => value` places every target at one position. |
-| `value` | existing forms, plus `:obs => :simvar` and `:obs => fn => :simvar` | Observed column. The simulated variable defaults to the observed column's name; `=> :simvar` names it explicitly. |
-| `variable` | existing forms | With `match`/`at`: a target column of simulated variable names (long data with several endpoints). Overrides the default. |
+| `variable` | `:simvar`, `Dict(measured => :simvar, ...)`, or omitted | The simulated variable. A name applies to every row. When the TargetSet has a `variable` column (long data naming each row's measured variable), a Dict translates those names, and omitting `variable` uses them as simulated names directly. |
 
-`match` and `at` are each optional; either one switches the TargetSet to
-matching.
-`match`/`at` columns keep their names in the TargetSet, so `where(ts, :dose => 10)`
-works. Target names are generated from the match and `at` columns, e.g.
-`:"dose=10.0,TIME=24.0"`.
+Keys and `at` are each optional. The TargetSet columns they name keep their
+names, so `where(ts, :dose => 10)` works. Rows without given names are named
+after the mapping (`:"dose=10.0,TIME=24.0"`) in reports and errors.
+
+Each TargetSet's rows use that TargetSet's loss; a `loss` keyword overrides them
+all, and a per-row `loss` column wins over both.
 
 Unit conversions are done on the target DataFrame before building the
 TargetSet; `match` and `at` take column names and constants only.
 
-Series-valued targets (`(t=..., y=...)` cells) are not supported with
-`match`/`at`; use one row per point with `at = :TIME`.
+Series-valued targets (`(t=..., y=...)` cells) cannot be matched; use one row per
+point with `at = :TIME`, or a `predict` function.
 
 ### Simulation outputs
 
@@ -123,13 +137,12 @@ on the other.
 
 ### fit / objective / score
 
-- `score(ts; sim)`, `objective(ts; ...)`, `setup(ts; ...)` and `fit(ts; ...)`
-  use matching for TargetSets that have `match`/`at`.
-- Passing `predict` together with a matching TargetSet is an `ArgumentError`.
-- `predict = (sim, row) -> ...` remains the escape hatch for TargetSets without
-  `match`/`at`.
-- A TargetSet with neither `match`/`at` nor `predict` is an `ArgumentError`:
-  there is no implicit lookup.
+- A mapping is required: without `match`/`at`/`variable` or `predict` (or a
+  paired `Match`/function), `score`, `objective`, `setup`, and `fit` raise an
+  `ArgumentError`. There is no implicit lookup.
+- `predict` together with `match`/`at`/`variable` is an `ArgumentError`.
+- The columns a `Match` names are checked against each TargetSet when the two
+  are paired, so a wrong column fails before any simulation runs.
 
 ### Other changes
 
@@ -142,13 +155,14 @@ on the other.
 
 The `condition` and `timepoint` keywords and the implicit lookup
 (`sim[condition][variable]`, `sim[variable]`, `sim[target name]`, and
-series-valued targets keyed by condition) are removed. Passing `condition` or
-`timepoint` to `TargetSet` is an unsupported-keyword `MethodError`. Targets
-keyed by name, or series-valued targets, use `predict`.
+series-valued targets keyed by condition) are removed. `TargetSet` takes no
+mapping keywords (`condition`, `timepoint`, `match`, `at` are unsupported-keyword
+`MethodError`s). Targets keyed by name, or series-valued targets, use `predict`.
 
 ## Out of scope
 
 - Interpolation along table axes.
 - Transforms inside `match`/`at`.
+- Per-TargetSet loss for the `df => predict_fn` pair API (it uses one `loss`).
 - Matching against a SimKit `PopulationResult` (error; use `to_dataframe`).
 - Keyed NamedTuple outputs such as `(pk = sol,)`.

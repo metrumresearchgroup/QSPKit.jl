@@ -9,13 +9,13 @@ simulate_pk(overrides) =
     scan(SimContext(prob) |> with(overrides), :dose => dose_levels;
          events = p -> regimen(p.dose), duration = t_end)
 
-targets_pk = TargetSet(obs_df;      # columns: dose, TIME, Conc
-    match = :dose,                  # picks the scan result
-    value = :Conc,                  # observed column = simulated variable
-    at    = :TIME,                  # evaluates that result's solution at TIME
-)
+targets_pk = TargetSet(obs_df; value = :Conc)   # columns: dose, TIME, Conc
 
-result = fit(targets_pk; simulate = simulate_pk, params = param_names, bounds = bounds)
+result = fit(targets_pk; simulate = simulate_pk,
+    match    = :dose,    # picks the scan result
+    at       = :TIME,    # evaluates that result's solution at TIME
+    variable = :Conc,    # the simulated variable compared with Conc
+    params = param_names, bounds = bounds)
 ```
 
 The same targets also match `to_dataframe(scan(...))`, `result(scan(...))`, or a

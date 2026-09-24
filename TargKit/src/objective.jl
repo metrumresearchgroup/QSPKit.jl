@@ -235,18 +235,35 @@ end
 # ============================================================
 
 """
-    objective(ts::TargetSet...; simulate, predict=nothing, params, bounds, kwargs...) -> ObjectiveFunction
+    objective(ts::TargetSet...; simulate, match, at, variable, params, bounds, kwargs...) -> ObjectiveFunction
+    objective(ts::TargetSet...; simulate, predict, params, bounds, kwargs...) -> ObjectiveFunction
+    objective(ts => Match(...), ...; simulate, params, bounds, kwargs...) -> ObjectiveFunction
 
 Build a callable objective function from TargetSets.
 
-`simulate` receives parameter overrides and returns the simulation output. Each
-TargetSet maps its rows to that output with `match`/`at`, or through
-`predict = (sim, row) -> value`; one of the two is required.
+`simulate` receives parameter overrides and returns the simulation output. Say
+how the TargetSets' rows line up with it: `match`/`at`/`variable` (see `Match`),
+or `predict = (sim, row) -> value`. With several TargetSets that line up
+differently, pair each with its own `Match` or predict function.
+
+Each TargetSet's rows use that TargetSet's loss; `loss` overrides them all. A
+per-row `loss` column wins over both.
 """
 function objective(
     targets_in::TargetSet...;
-    simulate::Function,
     predict=nothing,
+    match=nothing,
+    at=nothing,
+    variable=nothing,
+    kwargs...,
+)
+    mapping = _keyword_mapping(predict, match, at, variable, "objective")
+    return objective((ts => mapping for ts in targets_in)...; kwargs...)
+end
+
+function objective(
+    pairs::Pair{TargetSet}...;
+    simulate::Function,
     params::Vector{Symbol},
     bounds::NamedTuple{(:lb, :ub), Tuple{Vector{Float64}, Vector{Float64}}},
     loss::Union{Symbol, Function, Nothing} = nothing,
@@ -256,18 +273,24 @@ function objective(
     bounds_penalty::Union{Float64, Nothing} = nothing,
     parameter_scale::Symbol = :log,
 )
-    # Use the loss from the first TargetSet if not explicitly provided.
-    effective_loss = isnothing(loss) ? (isempty(targets_in) ? :log : first(targets_in).loss) : loss
-
-    pairs = [Pair{DataFrame, Function}(DataFrame(ts.df), _target_predictor(ts, predict, "objective"))
-             for ts in targets_in]
+    bound = Pair{DataFrame, Function}[]
+    for (ts, mapping) in pairs
+        df, predictor = _bind(ts, mapping, "objective")
+        if :loss ∉ propertynames(df)
+            # Series targets keep their automatic series loss.
+            row_loss = something(loss, ts.loss)
+            df[!, :loss] = Any[_is_series_value(v) ? missing : row_loss for v in df.value]
+        end
+        push!(bound, df => predictor)
+    end
+    default_loss = something(loss, isempty(pairs) ? :log : first(first(pairs)).loss)
 
     return objective_from_pairs(
-        pairs;
+        bound;
         simulate=simulate,
         params=params,
         bounds=bounds,
-        loss=effective_loss,
+        loss=default_loss,
         failure_penalty=failure_penalty,
         on_eval=on_eval,
         print_every=print_every,

@@ -58,7 +58,7 @@ export fit, score, objective, targets, Stage
 export setup, finish, inspect_fit, score_fit, checkpoint
 
 # Types
-export FitResult, ScoreReport, TargetSet
+export FitResult, ScoreReport, TargetSet, Match
 export FitState, StageResult, FitStep, FitPipeline
 
 # Named presets
