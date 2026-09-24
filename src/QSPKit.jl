@@ -32,14 +32,14 @@ using .ConfigKit: load_keyfile, ParameterSet, value, get_values, get_bounds,
     populate, populate!
 using .InjecKit: ev, IEvent, seq, combine, QD, BID, Q4W, loading_then
 using .SimKit: SimContext, Subject, Population, PopulationResult, with, events,
-    keep, observe, simulate, simulate_solution, subjects, to_dataframe,
+    keep, observe, simulate, simulate_solution, subjects, scan, to_dataframe,
     weeks, days, hours
 
 export load_keyfile, ParameterSet, value, get_values, get_bounds,
     populate, populate!
 export ev, IEvent, seq, combine, QD, BID, Q4W, loading_then
 export SimContext, Subject, Population, PopulationResult, with, events,
-    keep, observe, simulate, simulate_solution, subjects, to_dataframe,
+    keep, observe, simulate, simulate_solution, subjects, scan, to_dataframe,
     weeks, days, hours
 
 # These modules are public namespaces but are deliberately not exported into a

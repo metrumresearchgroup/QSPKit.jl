@@ -39,6 +39,10 @@ results = scan(baseline, :CL => [0.1, 0.5, 1.0, 2.0]) do ctx, params
 end
 df = to_dataframe(results)
 
+# Dose sweep, keyword form: `events` maps each sweep point to its dosing
+results = scan(prob, :dose => [10, 50, 100];
+    events = p -> ev(cmt=:Depot, amt=p.dose), duration = weeks(4), saveat = 1.0)
+
 # Population simulation from NONMEM data
 pop = Population(nm; id=:ID, time=:TIME, dv=:DV, amt=:AMT, evid=:EVID, cmt=:CMT,
                  parameters=[:BW])
@@ -60,6 +64,7 @@ obs_df = SimContext(prob) |> subjects(pop) |> simulate() |> to_dataframe(; obson
 | `to_dataframe(; obsonly, carry_out)` | Extract tidy DataFrame |
 | `branch(base, arms...)` | Fork into named arms |
 | `scan(fn, base, ranges...)` | Parameter sweep |
+| `scan(base, ranges...; events, duration)` | Sweep without a pipeline body |
 
 ## Population Pipeline
 

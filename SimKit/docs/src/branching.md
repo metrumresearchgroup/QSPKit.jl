@@ -57,3 +57,20 @@ end
 ```
 
 Returns `Vector{(params=Dict, result=SimContext)}`.
+
+### Keyword form
+
+When each sweep point is just "stage parameters, add events, simulate", skip the
+do-block. Swept names the model knows (parameters, or states as initial
+conditions) go through `with`; everything else is passed only to `events`, a
+function of the sweep point:
+
+```julia
+results = scan(prob, :dose => [10, 50, 100], :CL => [0.1, 0.5];
+    events = p -> ev(cmt=:Depot, amt=p.dose),
+    duration = 400.0, solver = Rodas5P(), saveat = 1.0)
+```
+
+The sweep point is a `NamedTuple` (`p.dose`, `p.CL`). `duration` defaults to the
+problem's `tspan`; other keywords go to `simulate`. Without `events`, every swept
+name must be a model parameter or state, so a typo fails before anything runs.

@@ -7,6 +7,7 @@ using QSPKit
     @test QSPKit.InjecKit.ev === QSPKit.ev
     @test QSPKit.SimKit.simulate === QSPKit.simulate
     @test QSPKit.SimKit.Population === QSPKit.Population
+    @test QSPKit.SimKit.scan === QSPKit.scan
 
     exported = Set(names(QSPKit))
     @test :simulate in exported

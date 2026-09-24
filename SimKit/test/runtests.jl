@@ -350,6 +350,54 @@ base_prob = ODEProblem(sys, [], (0.0, 100.0))
         @test_throws ArgumentError result(results)
     end
 
+    @testset "scan — keyword form" begin
+        dose_events = p -> ev(time=0.0, cmt=:Depot, amt=p.dose)
+
+        # Swept dose only reaches `events`; matches the equivalent do-block scan
+        kw = scan(base_prob, :dose => [10.0, 20.0];
+            events=dose_events, duration=10.0, solver=Tsit5(), saveat=[0.0, 10.0], name=:pk)
+        blk = scan(base_prob, :dose => [10.0, 20.0]) do c, p
+            c |> events(ev(time=0.0, cmt=:Depot, amt=p[:dose])) |>
+                simulate(10.0; solver=Tsit5(), saveat=[0.0, 10.0], name=:pk)
+        end
+        @test [r.params[:dose] for r in kw] == [10.0, 20.0]
+        @test all(r -> r.result isa SimContext, kw)
+        @test phases(kw[1].result)[1].name == :pk
+        @test phases(kw[1].result)[1].duration == 10.0
+        @test result(kw)[20.0](0.0; idxs=sys.Depot) ≈ 20.0
+        @test result(kw)[10.0].u == result(blk)[10.0].u
+        @test result(kw)[20.0].u == result(blk)[20.0].u
+        @test :dose in propertynames(to_dataframe(kw))
+
+        # Model parameters in the sweep go through `with`; the event function sees them too
+        seen_ka = Float64[]
+        mixed = scan(base_prob, :dose => [100.0], :ka => [0.1, 1.0];
+            events=p -> (push!(seen_ka, p.ka); dose_events(p)),
+            duration=10.0, solver=Tsit5(), reltol=1e-8, abstol=1e-8)
+        @test seen_ka == [0.1, 1.0]
+        for r in mixed
+            @test r.result.sol(10.0; idxs=sys.Depot) ≈ 100.0 * exp(-10.0 * r.params[:ka]) rtol=1e-5
+        end
+
+        # States sweep as initial conditions, without events
+        ic = scan(base_prob, :Depot => [50.0]; duration=10.0, solver=Tsit5(), saveat=[0.0, 10.0])
+        @test ic[1].result.sol(0.0; idxs=sys.Depot) ≈ 50.0
+
+        # Pure parameter sweep; duration defaults to the problem tspan
+        ps = scan(SimContext(base_prob; solver=Tsit5()), :ka => [0.1, 1.0])
+        @test length(ps) == 2
+        @test phases(ps[1].result)[1].duration == 100.0
+
+        # Curried form pipes from an ODEProblem
+        piped = base_prob |> scan(:dose => [10.0]; events=dose_events, duration=10.0, solver=Tsit5())
+        @test length(piped) == 1
+        @test piped[1].result isa SimContext
+
+        # Non-model sweep names need an events function
+        @test_throws ArgumentError scan(base_prob, :dose => [10.0]; duration=10.0)
+        @test_throws ArgumentError scan(base_prob, :ka => [0.1], :dose => [10.0]; duration=10.0)
+    end
+
     # ============================================================
     # 12. result — specific phase access
     # ============================================================

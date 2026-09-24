@@ -41,6 +41,24 @@ results = scan(baseline, :CL => [0.1, 0.5, 1.0, 2.0, 5.0]) do ctx, params
 end
 ```
 
+## Dose Sweep
+
+Doses are event amounts, not model parameters, so the keyword form of `scan`
+hands each swept dose to an `events` function. Keep the swept value in the units
+you want to report; the `dose` column from `to_dataframe` holds it as given:
+
+```julia
+Vwell = 0.2  # L
+results = scan(prob, :dose => [0.1, 1.0, 10.0];            # nM
+    events = p -> ev(cmt=:TCE, amt=p.dose * Vwell),         # nM → nmol
+    duration = 72.0, solver = Rodas5P(), saveat = 1.0)
+
+df = to_dataframe(results)
+```
+
+`events` may return any regimen `events` accepts, e.g.
+`p -> QD(p.dose * Vwell, :TCE; days=7)`.
+
 ## Conditions from DataFrame
 
 ```julia
