@@ -9,7 +9,8 @@ reading or modifying their installed libraries or lockfiles.
 Start Julia with the consuming project active (`julia --project=.`), then use
 ShowKit normally. The first R operation resolves and downloads a compatible
 native environment, prepares the selected R packages, verifies their namespaces,
-sets the project-local RCall preferences, and loads RCall. Importing ShowKit or
+sets the project-local RCall preferences, precompiles RCall for that selection
+when needed, and loads RCall. Importing ShowKit or
 CondaR does not download anything or start R. No CondaR setup call or shell
 environment variable is required.
 

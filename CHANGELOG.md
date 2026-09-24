@@ -7,6 +7,11 @@
   Swept model parameters and states are staged with `with`; other swept values
   are passed only to the `events` function. Remaining keywords go to `simulate`.
 - Exported `scan` from the root `QSPKit` module.
+- Fixed the first ShowKit R call in a session logging `Precompiled image RCall
+  not available` while loading `SciMLBaseRCallExt`. CondaR now precompiles
+  RCall for the selected R environment before importing it. Julia's loader had
+  been loading RCall from source because RCall's source contains a conditional
+  `__precompile__(false)`, leaving the extension no cache image to build against.
 
 ## QSPKit 0.1.0 — 2026-09-17
 

@@ -40,6 +40,20 @@ function prepare!()
     end
 end
 
+# Julia's loader skips precompiling a package whose source contains the text
+# `__precompile__(false)`; RCall has it behind `if Rhome == ""`. RCall would then
+# load without a cache image, and extensions triggered by it (SciMLBaseRCallExt)
+# fail to precompile. Compiling explicitly with the new preferences avoids that.
+function _precompile_rcall!(id; isprecompiled=Base.isprecompiled, compilecache=Base.compilecache)
+    isprecompiled(id) && return false
+    @info "CondaR: precompiling RCall for the selected R environment"
+    result = compilecache(id)
+    result isa Exception && error(
+        "CondaR: RCall could not be precompiled for the selected R environment: " *
+        sprint(showerror, result))
+    return true
+end
+
 function _ensure_r!()
     lock(_R_LOCK) do
         _R_MODULE[] === nothing || return _R_MODULE[]
@@ -47,6 +61,7 @@ function _ensure_r!()
         id = Base.PkgId(Base.UUID("6f49c342-dc21-5d91-9882-a32aef131414"), "RCall")
         haskey(Base.loaded_modules, id) && error("RCall was loaded before CondaR could select its R environment. Restart Julia and use ShowKit before importing RCall.")
         prepared = _prepare_rcall!(root, _mode(root))
+        _precompile_rcall!(id)
         R = Base.require(@__MODULE__, :RCall)
         rhome = Base.invokelatest(getproperty, R, :Rhome)
         rhome == prepared.rhome || error(

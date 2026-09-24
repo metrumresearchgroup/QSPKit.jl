@@ -177,6 +177,19 @@ end
     end
 end
 
+@testset "RCall is precompiled before import" begin
+    id = Base.PkgId(Base.UUID("6f49c342-dc21-5d91-9882-a32aef131414"), "RCall")
+    compiled = Base.PkgId[]
+    record(pkg) = (push!(compiled, pkg); ("cache.ji", nothing))
+    @test !CondaR._precompile_rcall!(id; isprecompiled=_ -> true, compilecache=record)
+    @test isempty(compiled)
+    @test CondaR._precompile_rcall!(id; isprecompiled=_ -> false, compilecache=record)
+    @test compiled == [id]
+    declined = _ -> Base.PrecompilableError()
+    @test_throws ErrorException CondaR._precompile_rcall!(
+        id; isprecompiled=_ -> false, compilecache=declined)
+end
+
 @testset "Project-owned native and R resolutions" begin
     mktempdir() do root
         write(joinpath(root, "Project.toml"), "[deps]\n")
