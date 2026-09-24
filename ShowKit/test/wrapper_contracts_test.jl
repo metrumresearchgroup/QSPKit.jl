@@ -23,6 +23,10 @@ const _SHOWKIT_MOCK_FUNCTION_REFS = (
     ShowKit._robject_fn,
 )
 
+const _SHOWKIT_MOCK_CONDAR_REFS = (
+    ShowKit.CondaR._R_MODULE,
+)
+
 struct _ShowKitMockRObject
     kind::Symbol
     value::Any
@@ -30,11 +34,20 @@ end
 
 """Run a test against a deterministic in-memory stand-in for the R boundary."""
 function _with_mock_showkit_r(f::Function)
-    refs = (_SHOWKIT_MOCK_AVAILABILITY_REFS..., _SHOWKIT_MOCK_FUNCTION_REFS...)
+    refs = (
+        _SHOWKIT_MOCK_AVAILABILITY_REFS...,
+        _SHOWKIT_MOCK_FUNCTION_REFS...,
+        _SHOWKIT_MOCK_CONDAR_REFS...,
+    )
     saved = map(ref -> ref[], refs)
     calls = Any[]
     try
         foreach(ref -> ref[] = true, _SHOWKIT_MOCK_AVAILABILITY_REFS)
+        # _require_r() asks CondaR to initialize even when all ShowKit bridge
+        # functions are replaced below. Mark the bridge as initialized so this
+        # unit test remains an in-memory contract test with no native resolver
+        # or network dependency.
+        ShowKit.CondaR._R_MODULE[] = _ShowKitMockRObject(:module, nothing)
 
         ShowKit._reval_fn[] = function(code)
             value = String(code)
@@ -256,11 +269,46 @@ end
             "synthetic-plot";
             script="wrapper_contracts_test.jl",
         ) === nothing
+
+        empty!(calls)
+        @test mrggsave(
+            GGPlot(_ShowKitMockRObject(:plot, nothing)),
+            "headless-png";
+            script="wrapper_contracts_test.jl",
+            dev="png",
+        ) === nothing
+        save_call = only(filter(
+            call -> call.kind === :rcall && haskey(call.kwargs, :stem),
+            calls,
+        ))
+        @test save_call.kwargs[:type] == "cairo-png"
+
+        empty!(calls)
+        @test mrggsave(
+            GGPlot(_ShowKitMockRObject(:plot, nothing)),
+            "explicit-png-backend";
+            script="wrapper_contracts_test.jl",
+            dev="png",
+            type="cairo",
+        ) === nothing
+        save_call = only(filter(
+            call -> call.kind === :rcall && haskey(call.kwargs, :stem),
+            calls,
+        ))
+        @test save_call.kwargs[:type] == "cairo"
+
+        empty!(calls)
         @test mrggsave_list(
             [GGPlot(_ShowKitMockRObject(:plot, nothing))];
             stems=["synthetic-plot"],
             script="wrapper_contracts_test.jl",
+            dev=["pdf", "png"],
         ) === nothing
+        save_call = only(filter(
+            call -> call.kind === :rcall && haskey(call.kwargs, :dir),
+            calls,
+        ))
+        @test save_call.kwargs[:type] == "cairo-png"
 
         obs = DataFrame(id=[1], time=[0.0], dv=[1.0])
         sim = DataFrame(id=[1], time=[0.0], dv=[1.1])

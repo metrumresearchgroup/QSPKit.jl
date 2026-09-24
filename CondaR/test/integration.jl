@@ -17,7 +17,7 @@ using Test, QSPKit.CondaR
         cd(directory) do
             rcall(reval("mrggsave::mrggsave"), plot;
                   stem="native-smoke", dir=directory, dev=["png"], script="integration.jl",
-                  width=4.0, height=3.0, var"path.type"="none")
+                  width=4.0, height=3.0, type="cairo-png", var"path.type"="none")
             @test filesize(joinpath(directory, "native-smoke.png")) > 100
             reval("while(grDevices::dev.cur() > 1) grDevices::dev.off()")
         end

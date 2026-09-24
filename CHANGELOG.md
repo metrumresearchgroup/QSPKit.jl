@@ -27,6 +27,9 @@
 - TargKit `TargetSet` role keywords that name a missing column, or that would
   rename a column onto an existing one, are now errors instead of being
   silently ignored.
+- ShowKit `mrggsave` and `mrggsave_list` now write PNG files with R's headless
+  Cairo device (`type = "cairo-png"`) unless `type` is passed, so PNG output
+  works on Linux machines without an X11 display.
 - Fixed the first ShowKit R call in a session logging `Precompiled image RCall
   not available` while loading `SciMLBaseRCallExt`. CondaR now precompiles
   RCall for the selected R environment before importing it. Julia's loader had

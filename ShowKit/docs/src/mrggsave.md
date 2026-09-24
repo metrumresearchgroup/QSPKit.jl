@@ -41,6 +41,10 @@ mrggsave(p, "fig1"; dev="png")
 mrggsave(p, "fig1"; dev=["pdf", "png"])
 ```
 
+PNG output uses R's headless Cairo backend by default, so it works on remote
+Linux machines without an X11 display. Pass `type="cairo"` (or another R
+`png()` device type) only when an explicit override is needed.
+
 ### Script Annotation
 
 The `script` argument stamps the figure with the generating script name:

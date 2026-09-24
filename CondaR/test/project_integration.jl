@@ -21,7 +21,8 @@ using QSPKit.CondaR
     @test occursin("\t\"MPN\"\t", plan)
     plot = reval("ggplot2::ggplot(data.frame(x=1:3, y=3:1), ggplot2::aes(x,y)) + ggplot2::geom_point()")
     rcall(reval("mrggsave::mrggsave"), plot; stem="managed", dir=root,
-          dev=["png"], script="project_integration.jl", var"path.type"="none")
+          dev=["png"], type="cairo-png", script="project_integration.jl",
+          var"path.type"="none")
     @test filesize(joinpath(root, "managed.png")) > 100
 end
 

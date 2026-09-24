@@ -49,6 +49,22 @@ function _resolve_script(script::Union{String, Nothing})
     return detected
 end
 
+# Base R's PNG device can default to its Xlib implementation on Linux. That
+# fails on headless workers even though the managed CondaR runtime includes
+# Cairo support. mrggsave forwards matching `...` arguments to `png()`, so use
+# the display-independent Cairo PNG implementation unless the caller explicitly
+# selected another `type`.
+function _append_mrggsave_kwargs!(r_kwargs, dev_vec, kwargs)
+    explicit_type = false
+    for (k, v) in kwargs
+        rname = Symbol(_julia_to_r_name(k))
+        explicit_type |= rname === :type
+        push!(r_kwargs, rname => _convert_value(v))
+    end
+    "png" in dev_vec && !explicit_type && push!(r_kwargs, :type => "cairo-png")
+    return r_kwargs
+end
+
 """
     mrggsave(plot::GGPlot, stem::String; dir=".", script=nothing,
              dev=["pdf"], width=5.0, height=4.0, kwargs...)
@@ -86,10 +102,7 @@ function mrggsave(plot::GGPlot, stem::String;
         Symbol("path.type") => "none",
     ]
     push!(r_kwargs, :script => _resolve_script(script))
-    for (k, v) in kwargs
-        rname = Symbol(_julia_to_r_name(k))
-        push!(r_kwargs, rname => _convert_value(v))
-    end
+    _append_mrggsave_kwargs!(r_kwargs, dev_vec, kwargs)
     _rcall(r_fn, plot.robject; r_kwargs...)
     # Close any stray R graphics devices (mrggsave can open RPlots.pdf)
     _reval("while(grDevices::dev.cur() > 1) grDevices::dev.off()")
@@ -145,10 +158,7 @@ function mrggsave_list(plots::Vector{GGPlot};
         Symbol("path.type") => "none",
     ]
     push!(r_kwargs, :script => _resolve_script(script))
-    for (k, v) in kwargs
-        rname = Symbol(_julia_to_r_name(k))
-        push!(r_kwargs, rname => _convert_value(v))
-    end
+    _append_mrggsave_kwargs!(r_kwargs, dev_vec, kwargs)
     _rcall(r_fn, r_list; r_kwargs...)
     _reval("while(grDevices::dev.cur() > 1) grDevices::dev.off()")
     if isfile("Rplots.pdf"); rm("Rplots.pdf"; force=true); end
