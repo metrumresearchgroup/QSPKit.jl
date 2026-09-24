@@ -11,11 +11,10 @@ directly from the public repository:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/metrumresearchgroup/QSPKit.jl.git", rev="v0.1.0")
+Pkg.add(url="https://github.com/metrumresearchgroup/QSPKit.jl.git", rev="v0.1.0") # For release 0.1.0
+# Pkg.add(url="https://github.com/metrumresearchgroup/QSPKit.jl.git#main") # For main 
 ```
 
-Applications should commit both `Project.toml` and `Manifest.toml` to preserve
-the exact QSPKit source revision and full dependency resolution.
 
 ## Use
 
@@ -52,11 +51,6 @@ julia --startup-file=no --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test("
 That one command runs the root API checks and every bundled submodule's test
 suite.
 
-## Security boundary
-
-ConfigKit keyfiles may contain Julia expression strings that are evaluated when
-values and symbolic bindings are resolved. Load keyfiles only from trusted
-sources.
 
 ## License
 
