@@ -164,7 +164,7 @@ function _run_stage(obj, stage::Stage, x_start, lb, ub, verbose, stage_idx, n_st
             error("Internal error: unsupported bound mode $(repr(bound_mode))")
         end
 
-        sol = solve(prob, solver; maxiters=stage.maxiters)
+        sol = solve(prob, solver; maxiters=stage.maxiters, stage.options...)
         candidate_x = _project_numerical_bound_overshoot(sol.u, lb, ub, requested_solver)
         candidate_loss = candidate_x == sol.u ? sol.objective : obj(candidate_x)
 
@@ -187,6 +187,50 @@ end
 # ============================================================
 # Solver bound handling
 # ============================================================
+
+# ============================================================
+# Stage options
+# ============================================================
+
+# NelderMead and LBFGS run inside Optim's Fminbox: `maxiters` is the number of
+# outer (bound-handling) iterations, `local_maxiters` the inner iterations of
+# each. Names are Optim.Options fields, plus Optimization.jl's `local_maxiters`
+# and `maxtime` (seconds).
+const _BOX_STAGE_OPTIONS = (
+    :local_maxiters, :maxtime,
+    :g_abstol, :f_abstol, :f_reltol, :x_abstol, :x_reltol,
+    :outer_g_abstol, :outer_f_abstol, :outer_f_reltol, :outer_x_abstol, :outer_x_reltol,
+    :f_calls_limit, :g_calls_limit, :successive_f_tol,
+    :allow_f_increases, :allow_outer_f_increases, :show_trace, :show_every,
+)
+
+# ParticleSwarm has no convergence test; it stops at `maxiters` or a limit.
+const _SWARM_STAGE_OPTIONS = (:maxtime, :f_calls_limit, :show_trace, :show_every)
+
+"""
+Reject optimizer options a stage would not use. The backend silently accepts
+options that have no effect (a tolerance on ParticleSwarm) and reports typos only
+as an unreadable MethodError, so the check happens when the stage is built.
+"""
+function _check_stage_options(solver, options::NamedTuple)
+    isempty(options) && return nothing
+    name = nameof(typeof(solver))
+    for key in (:iterations, :outer_iterations)
+        haskey(options, key) && throw(ArgumentError(
+            "Stage($name): set iterations with `maxiters` (outer iterations for NelderMead and LBFGS) " *
+            "and `local_maxiters` (inner iterations), not `$key`"))
+    end
+    allowed = solver isa ParticleSwarm ? _SWARM_STAGE_OPTIONS :
+        solver isa Union{NelderMead, LBFGS, Optim.Fminbox} ? _BOX_STAGE_OPTIONS :
+        nothing   # unsupported solvers fail when the stage runs
+    allowed === nothing && return nothing
+    unknown = [key for key in keys(options) if key ∉ allowed]
+    isempty(unknown) && return nothing
+    hint = solver isa ParticleSwarm ?
+        " ParticleSwarm has no convergence test: it runs `maxiters` iterations, or until `maxtime` seconds." : ""
+    throw(ArgumentError("Stage($name): unsupported option(s) $(join([":$k" for k in unknown], ", ")).$hint " *
+        "Supported: $(join([":$k" for k in allowed], ", "))."))
+end
 
 _bounded_solver(solver::ParticleSwarm) = (solver, :native)
 _bounded_solver(solver::NelderMead) = (Optim.Fminbox(solver), :box)

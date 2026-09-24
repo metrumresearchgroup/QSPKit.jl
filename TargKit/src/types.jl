@@ -6,13 +6,26 @@
 # Stage — one step in an optimization pipeline
 # ============================================================
 
+"""
+    Stage(solver; maxiters, restarts = 1, options...)
+
+One optimization stage. `options` go to the optimizer and are checked when the
+stage is built; see `fit(solver; ...)` for what each solver supports.
+"""
 struct Stage
     solver      # any Optimization.jl solver
     maxiters::Int
     restarts::Int
+    options::NamedTuple   # optimizer options, e.g. (local_maxiters = 500, g_abstol = 1e-6)
 end
 
-Stage(solver; maxiters::Int, restarts::Int=1) = Stage(solver, maxiters, restarts)
+Stage(solver, maxiters::Int, restarts::Int) = Stage(solver, maxiters, restarts, NamedTuple())
+
+function Stage(solver; maxiters::Int, restarts::Int=1, options...)
+    options = NamedTuple(options)
+    _check_stage_options(solver, options)
+    return Stage(solver, maxiters, restarts, options)
+end
 
 # ============================================================
 # ScoreReport — scoring output (DataFrame-based details)

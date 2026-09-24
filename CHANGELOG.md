@@ -29,6 +29,15 @@
   TargetSet holds only observed data; `fit`, `setup`, `objective`, and `score`
   need `match`/`at`/`variable` or a `predict` function, and raise an error
   without one instead of silently scoring every target with a penalty.
+- Added optimizer options to TargKit fit stages:
+  `fit(NelderMead(); maxiters = 5, local_maxiters = 500, g_abstol = 1e-6)`, and
+  the same keywords on `Stage`. NelderMead and LBFGS run inside Optim's
+  `Fminbox`, so `maxiters` counts outer iterations and `local_maxiters` the
+  inner iterations of each (default 1000); tolerances are Optim's `g_abstol`,
+  `f_reltol`, `f_abstol`, `x_abstol`, `x_reltol`, and their `outer_*` versions.
+  ParticleSwarm has no convergence test and takes only `maxtime` and
+  `f_calls_limit`. Options a stage would not use are an error when the stage is
+  built.
 - Fixed TargKit `fit` and `setup` ignoring a TargetSet's `loss` (they passed
   `:log` down). Each TargetSet's rows now use its own loss; `loss = ...` on the
   call overrides them all.

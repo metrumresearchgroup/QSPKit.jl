@@ -88,18 +88,31 @@ end
 # ============================================================
 
 """
-    fit(solver; maxiters, restarts=1) -> FitStep
+    fit(solver; maxiters, restarts=1, options...) -> FitStep
 
-Create a pipeline step that runs one optimization stage.
+Create a pipeline step that runs one optimization stage. `options` go to the
+optimizer:
+
+- **NelderMead, LBFGS** run inside Optim's box-constrained `Fminbox`: `maxiters`
+  is the number of *outer* (bound-handling) iterations, and each runs up to
+  `local_maxiters` inner iterations (default 1000). Convergence: `g_abstol`
+  (NelderMead: spread of objective values across the simplex; LBFGS: gradient
+  norm; default 1e-8), `f_reltol`, `f_abstol`, `x_abstol`, `x_reltol`, and the
+  `outer_*` versions for the outer loop. Limits: `maxtime` (seconds),
+  `f_calls_limit`, `g_calls_limit`.
+- **ParticleSwarm** has no convergence test: it runs `maxiters` iterations, or
+  until `maxtime` seconds or `f_calls_limit` evaluations.
+
+Unsupported options are an error when the stage is built.
 
 # Example
 ```julia
-state |> fit(ParticleSwarm(n_particles=50); maxiters=1000, restarts=3) |>
-         fit(NelderMead(); maxiters=300)
+state |> fit(ParticleSwarm(n_particles=50); maxiters=1000, restarts=3, maxtime=600) |>
+         fit(NelderMead(); maxiters=5, local_maxiters=500, g_abstol=1e-6)
 ```
 """
-function fit(solver; maxiters::Int, restarts::Int=1)
-    stage = Stage(solver; maxiters=maxiters, restarts=restarts)
+function fit(solver; maxiters::Int, restarts::Int=1, options...)
+    stage = Stage(solver; maxiters=maxiters, restarts=restarts, options...)
     solver_name = Symbol(nameof(typeof(solver)))
     FitStep(solver_name, state -> _run_pipeline_stage(state, stage))
 end

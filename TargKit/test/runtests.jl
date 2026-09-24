@@ -313,6 +313,41 @@ end
 
         s2 = Stage(ParticleSwarm(n_particles=10); maxiters=50, restarts=3)
         @test s2.restarts == 3
+        @test s2.options == NamedTuple()
+
+        @testset "optimizer options" begin
+            s3 = Stage(NelderMead(); maxiters=5, local_maxiters=50, g_abstol=1e-6)
+            @test s3.options == (local_maxiters=50, g_abstol=1e-6)
+            @test Stage(ParticleSwarm(); maxiters=5, maxtime=10.0).options == (maxtime=10.0,)
+
+            # Options a stage would not use, typos, and iteration fields are errors
+            swarm = try
+                Stage(ParticleSwarm(); maxiters=5, g_abstol=1e-6)
+                ""
+            catch e
+                sprint(showerror, e)
+            end
+            @test occursin("ParticleSwarm has no convergence test", swarm)
+            @test_throws ArgumentError Stage(ParticleSwarm(); maxiters=5, local_maxiters=10)
+            @test_throws ArgumentError Stage(NelderMead(); maxiters=5, g_abstl=1e-6)
+            @test_throws ArgumentError Stage(LBFGS(); maxiters=5, iterations=10)
+            @test_throws ArgumentError fit(NelderMead(); maxiters=5, outer_iterations=10)
+
+            # Options reach the optimizer: fewer inner iterations, fewer evaluations
+            df = targets(result = (2.0, 1.5, 2.5))
+            evaluations(step) = begin
+                count = Ref(0)
+                fit(df => (ctx, row) -> ctx.result;
+                    simulate = overrides -> (result = overrides[:a] + overrides[:b],),
+                    params = [:a, :b], bounds = (lb = [0.1, 0.1], ub = [5.0, 5.0]),
+                    x0 = [0.3, 0.3], strategy = [step],
+                    on_eval = (n, _, _, _) -> (count[] = n), verbose = false)
+                count[]
+            end
+            short = evaluations(Stage(NelderMead(); maxiters=1, local_maxiters=3))
+            long = evaluations(Stage(NelderMead(); maxiters=1, local_maxiters=200, g_abstol=1e-12))
+            @test short < long
+        end
     end
 
     # ============================================================
