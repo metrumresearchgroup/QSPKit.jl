@@ -48,16 +48,15 @@ hands each swept dose to an `events` function. Keep the swept value in the units
 you want to report; the `dose` column from `to_dataframe` holds it as given:
 
 ```julia
-Vwell = 0.2  # L
-results = scan(prob, :dose => [0.1, 1.0, 10.0];            # nM
-    events = p -> ev(cmt=:TCE, amt=p.dose * Vwell),         # nM → nmol
-    duration = 72.0, solver = Rodas5P(), saveat = 1.0)
+results = scan(prob, :dose => [10.0, 50.0, 100.0];         # mg
+    events = p -> ev(cmt=:Depot, amt=p.dose),
+    duration = 72.0, saveat = 1.0)
 
 df = to_dataframe(results)
 ```
 
 `events` may return any regimen `events` accepts, e.g.
-`p -> QD(p.dose * Vwell, :TCE; days=7)`.
+`p -> QD(p.dose, :Depot; days=7)`.
 
 ## Conditions from DataFrame
 

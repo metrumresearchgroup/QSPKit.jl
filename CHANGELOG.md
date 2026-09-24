@@ -17,7 +17,7 @@
   `Match(...)`: `fit(pk => Match(:dose; at = :TIME, variable = :Conc), ...)`.
   `match` names the target columns that pick a simulation (dose, donor, arm).
   `at` picks the point along one axis, either a target column (`:TIME`,
-  `:TIME_hr => :TIME`) or a constant (`:TIME => 672.0`). `variable` names the
+  `:TIME_hr => :TIME`) or a constant (`:TIME => 48.0`). `variable` names the
   simulated variable, or translates a TargetSet `variable` column with a Dict.
   `simulate` may return a DataFrame, an ODE solution, a SimKit scan result or
   `SimContext`, or a Dict. Each target must match exactly one simulation point,

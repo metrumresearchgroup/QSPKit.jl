@@ -272,7 +272,7 @@ Say how the TargetSets' rows line up with the simulation output:
     fit(ts; simulate, match = :DOSE_mg => :dose, at = :TIME => 24.0, variable = :Conc, params, bounds)
     fit(ts; simulate, predict = (sim, row) -> ..., params, bounds)
     fit(pk => Match(:dose; at = :TIME, variable = :Conc),
-        pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+        pd => Match(:dose_mg => :dose; at = :TIME => 48.0, variable = :Effect);
         simulate, params, bounds)
 
 See `Match` and `TargKit/docs/matching.md`. Each TargetSet's rows use that

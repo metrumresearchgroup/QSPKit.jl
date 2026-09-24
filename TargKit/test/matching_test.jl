@@ -112,10 +112,10 @@ end
     @testset "several TargetSets, each with its own mapping and loss" begin
         sim = DataFrame(dose = [10.0, 100.0], Conc = [2.0, 20.0], Effect = [0.5, 0.9])
         pk = TargetSet(DataFrame(dose = [10.0, 100.0], conc = [2.0, 20.0]); value = :conc, loss = :squared)
-        pd = TargetSet(DataFrame(CONC = [100.0], effect = [0.9]); value = :effect, loss = (p, o, w) -> 7.0)
+        pd = TargetSet(DataFrame(dose_mg = [100.0], effect = [0.9]); value = :effect, loss = (p, o, w) -> 7.0)
 
         report = score(pk => Match(:dose; variable = :Conc),
-                       pd => Match(:CONC => :dose; variable = :Effect); sim = sim)
+                       pd => Match(:dose_mg => :dose; variable = :Effect); sim = sim)
         @test report.details.predicted == [2.0, 20.0, 0.9]
         @test report.details.loss == [0.0, 0.0, 7.0]   # each TargetSet keeps its loss
 
@@ -124,21 +124,21 @@ end
         @test report.details.predicted[3] == 0.9
 
         # objective and fit honor each TargetSet's loss too; `loss` overrides them
-        obj = objective(pk => Match(:dose; variable = :Conc), pd => Match(:CONC => :dose; variable = :Effect);
+        obj = objective(pk => Match(:dose; variable = :Conc), pd => Match(:dose_mg => :dose; variable = :Effect);
             simulate = p -> sim, params = [:a], bounds = (lb = [0.1], ub = [10.0]))
         @test obj(log.([1.0])) ≈ 7.0
-        overridden = objective(pk => Match(:dose; variable = :Conc), pd => Match(:CONC => :dose; variable = :Effect);
+        overridden = objective(pk => Match(:dose; variable = :Conc), pd => Match(:dose_mg => :dose; variable = :Effect);
             simulate = p -> sim, params = [:a], bounds = (lb = [0.1], ub = [10.0]), loss = :squared)
         @test overridden(log.([1.0])) ≈ 0.0 atol=1e-12
-        state = setup(pd; simulate = p -> sim, match = :CONC => :dose, variable = :Effect,
+        state = setup(pd; simulate = p -> sim, match = :dose_mg => :dose, variable = :Effect,
             params = [:a], bounds = (lb = [0.1], ub = [10.0]), verbose = false)
         @test state.loss ≈ 7.0
 
-        # The final report stacks TargetSets with different columns (dose vs CONC)
-        result = fit(pk => Match(:dose; variable = :Conc), pd => Match(:CONC => :dose; variable = :Effect);
+        # The final report stacks TargetSets with different columns (dose vs dose_mg)
+        result = fit(pk => Match(:dose; variable = :Conc), pd => Match(:dose_mg => :dose; variable = :Effect);
             simulate = p -> sim, params = [:a], bounds = (lb = [0.1], ub = [10.0]), strategy = :nm, verbose = false)
         @test nrow(result.report.details) == 3
-        @test isequal(result.report.details.CONC, [missing, missing, 100.0])
+        @test isequal(result.report.details.dose_mg, [missing, missing, 100.0])
     end
 
     @testset "match errors" begin

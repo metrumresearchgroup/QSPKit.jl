@@ -25,11 +25,11 @@ is declared where the two meet, on `fit`/`setup`/`objective`/`score`, like a
 join:
 
 - `match` names the target column(s) that pick a simulation: dose, donor, arm.
-  `:CONC => :dose` matches a target column against a differently named
+  `:dose_mg => :dose` matches a target column against a differently named
   simulation column.
 - `at` picks the point within it along one ordered axis: `:TIME` (a target
   column), `:TIME_hr => :TIME` (a target column matched to a differently named
-  axis), or `:TIME => 672.0` (every target at one point). The axis does not have
+  axis), or `:TIME => 48.0` (every target at one point). The axis does not have
   to be time; `at = :dose` reads a dose-response table.
 - `variable` names the simulated variable each observed value is compared with.
   When the TargetSet has a `variable` column naming each row's measured
@@ -52,7 +52,7 @@ With several TargetSets that line up differently, pair each with its own
 
 ```julia
 fit(pk => Match(:dose; at = :TIME, variable = :Conc),
-    pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+    pd => Match(:dose_mg => :dose; at = :TIME => 48.0, variable = :Effect);
     simulate = sim, params = [:CL, :V, :EC50], keyfile = kf)
 ```
 

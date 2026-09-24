@@ -11,9 +11,9 @@ How a TargetSet's rows line up with one simulation's output. Pass it to
 with a TargetSet: `fit(pk => Match(:dose; at = :TIME, variable = :Conc), ...)`.
 
 - `keys` — target columns holding discrete keys that pick a simulation: `:dose`,
-  or `:CONC => :dose` when the simulation names it differently.
+  or `:dose_mg => :dose` when the simulation names it differently.
 - `at` — the point within it, along one ordered axis: `:TIME` (a target column
-  named like the simulation axis), `:TIME_hr => :TIME`, or `:TIME => 672.0`
+  named like the simulation axis), `:TIME_hr => :TIME`, or `:TIME => 48.0`
   (every target at one point).
 - `variable` — the simulated variable each row's value is compared with: a name
   (`:Conc`), or a `Dict` translating the TargetSet's `variable` column

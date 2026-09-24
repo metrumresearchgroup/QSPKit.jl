@@ -48,7 +48,7 @@ with its own `Match` (or predict function):
 
 ```julia
 fit(pk => Match(:dose; at = :TIME, variable = :Conc),
-    pd => Match(:CONC => :dose; at = :TIME => 672.0, variable = :Effect);
+    pd => Match(:dose_mg => :dose; at = :TIME => 48.0, variable = :Effect);
     simulate = sim, params, bounds)
 ```
 

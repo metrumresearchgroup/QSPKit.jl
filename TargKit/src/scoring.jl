@@ -170,7 +170,7 @@ end
 
 """
 The ScoreReport for per-table rows. Tables with different metadata columns (e.g.
-TargetSets keyed by `dose` and by `CONC`) stack with `missing` in the gaps.
+TargetSets keyed by `dose` and by `dose_mg`) stack with `missing` in the gaps.
 """
 function _score_report(tables)
     frames = [DataFrame(rows) for rows in tables if !isempty(rows)]
